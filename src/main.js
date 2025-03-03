@@ -24,6 +24,9 @@ let urlParams = getUrlParameters();
 if (urlParams.NUM_SELECTIONS !== undefined) {
   globalState.NUM_SELECTIONS = Number(urlParams.NUM_SELECTIONS);
 }
+if (urlParams.NUM_TRIALS !== undefined) {
+  globalState.totalTrials = Number(urlParams.NUM_TRIALS);
+}
 if (urlParams.NUM_OBJECTS !== undefined) {
   globalState.NUM_OBJECTS = Number(urlParams.NUM_OBJECTS);
 }
@@ -76,5 +79,4 @@ reselectButton.addEventListener("click", reselectObjects);
 interceptionButton.addEventListener("click", startInterceptionSequence);
 aiRequest.addEventListener("click", revealAISolution);
 
-finishButton.style.display = "block";
 finishButton.addEventListener("click", finishGame);
