@@ -152,6 +152,7 @@ var _gameEvents = require("./logic/gameEvents");
 var _drawing = require("./logic/drawing");
 let urlParams = (0, _utils.getUrlParameters)();
 if (urlParams.NUM_SELECTIONS !== undefined) (0, _variable.globalState).NUM_SELECTIONS = Number(urlParams.NUM_SELECTIONS);
+if (urlParams.NUM_TRIALS !== undefined) (0, _variable.globalState).totalTrials = Number(urlParams.NUM_TRIALS);
 if (urlParams.NUM_OBJECTS !== undefined) (0, _variable.globalState).NUM_OBJECTS = Number(urlParams.NUM_OBJECTS);
 if (urlParams.AI_HELP !== undefined) (0, _variable.globalState).AI_HELP = Number(urlParams.AI_HELP);
 // Initial setup
@@ -187,7 +188,6 @@ initGame((0, _constant.randSeed)); // Replace 12345 with any desired seed
 (0, _domElements.reselectButton).addEventListener("click", (0, _gameEvents.reselectObjects));
 (0, _domElements.interceptionButton).addEventListener("click", (0, _gameEvents.startInterceptionSequence));
 (0, _domElements.aiRequest).addEventListener("click", (0, _gameEvents.revealAISolution));
-(0, _domElements.finishButton).style.display = "block";
 (0, _domElements.finishButton).addEventListener("click", (0, _gameEvents.finishGame));
 
 },{"./global/domElements":"iD4j1","./global/constant":"hlnpD","./global/variable":"aywHw","./utils/utils":"5sJZc","./logic/computation/solutionEvaluator":"7Gapw","./logic/gameEvents":"6fMdc","./logic/drawing":"4xh0b"}],"iD4j1":[function(require,module,exports,__globalThis) {
@@ -323,7 +323,7 @@ const globalState = {
     NUM_OBJECTS: 5,
     AI_HELP: 0,
     curTrial: 0,
-    totalTrials: 1,
+    totalTrials: 2,
     randomGenerator: null,
     centerX: 0,
     centerY: 0,
@@ -819,15 +819,12 @@ function revealAISolution() {
 }
 function finishGame() {
     console.log("Game finished, redirecting to feedback...");
-    // ✅ Stop animations (important)
     cancelAnimationFrame((0, _variableJs.globalState).animationFrameId);
-    // ✅ Redirect (no need to remove listeners)
+    const isLocal = window.location.hostname === "localhost";
+    const feedbackPath = isLocal ? "/feedback.html" : "/Human_AI_Interaction/feedback.html";
     setTimeout(()=>{
-        window.location.href = "/feedback.html"; // Redirect
+        window.location.href = feedbackPath;
     }, 100);
-// window.location.replace(
-//   "https://skittleskittles.github.io/Human_AI_Interaction/feedback.html"
-// );
 }
 
 },{"../global/variable.js":"aywHw","../global/domElements.js":"iD4j1","./drawing.js":"4xh0b","./animation.js":"bRKlk","./initialize.js":"lsRQu","./mouseEvents.js":"aDgsz","./computation/solutionEvaluator.js":"7Gapw","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4xh0b":[function(require,module,exports,__globalThis) {
@@ -1209,7 +1206,6 @@ parcelHelpers.export(exports, "handleObjectSelection", ()=>handleObjectSelection
 var _variable = require("../global/variable");
 var _drawing = require("./drawing");
 var _domElements = require("../global/domElements");
-var _gameEvents = require("./gameEvents");
 function handleMouseHover(event) {
     const rect = (0, _domElements.canvas).getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
@@ -1244,6 +1240,6 @@ function handleObjectSelection(event) {
     }
 }
 
-},{"../global/variable":"aywHw","./drawing":"4xh0b","../global/domElements":"iD4j1","./gameEvents":"6fMdc","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["gLLPy"], "gLLPy", "parcelRequire94c2")
+},{"../global/variable":"aywHw","./drawing":"4xh0b","../global/domElements":"iD4j1","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["gLLPy"], "gLLPy", "parcelRequire94c2")
 
 //# sourceMappingURL=index.cbb1cd4b.js.map
