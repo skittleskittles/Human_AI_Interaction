@@ -149,5 +149,8 @@ export function finishGame() {
   canvas.removeEventListener("mousemove", handleMouseHover);
 
   console.log("jump to feedback");
-  window.location.href = "/feedback.html";
+  window.location.replace(
+    "https://skittleskittles.github.io/Human_AI_Interaction/feedback.html"
+  );
+  // window.location.href = "/feedback.html";
 }

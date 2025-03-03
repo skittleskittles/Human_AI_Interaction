@@ -7,7 +7,6 @@
   "description": "",
   "license": "ISC",
   "homepage": "https://skittleskittles.github.io/Human_AI_Interaction/",
-  "main": "./src/main.js",
   "staticFiles": {
     "staticPath": [
       "public",
@@ -17,7 +16,7 @@
   "scripts": {
     "start": "parcel serve ./pages/*.html --dist-dir ./pages/dev-bundle/ --no-hmr",
     "build": "cd pages && parcel build ./*.html --dist-dir ./bundle/ --public-url . --no-cache --no-content-hash",
-    "deploy": "gh-pages -d ./pages/dev-bundle/"
+    "deploy": "gh-pages -d ./pages/bundle/"
   },
   "files": [
     "src/*"
