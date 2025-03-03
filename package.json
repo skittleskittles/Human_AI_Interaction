@@ -1,0 +1,35 @@
+{
+  "name": "demo",
+  "source": "./pages/index.html",
+  "version": "1.0.0",
+  "keywords": [],
+  "author": "",
+  "description": "",
+  "license": "ISC",
+  "homepage": "https://skittleskittles.github.io/Human_AI_Interaction/",
+  "main": "./src/main.js",
+  "staticFiles": {
+    "staticPath": [
+      "public",
+      "assets"
+    ]
+  },
+  "scripts": {
+    "start": "parcel serve ./pages/*.html --dist-dir ./pages/dev-bundle/ --no-hmr",
+    "build": "cd pages && parcel build ./*.html --dist-dir ./bundle/ --public-url . --no-cache --no-content-hash",
+    "deploy": "gh-pages -d ./pages/dev-bundle/"
+  },
+  "files": [
+    "src/*"
+  ],
+  "dependencies": {
+    "mathjs": "^14.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "eslint": "^9.21.0",
+    "gh-pages": "^6.3.0",
+    "globals": "^16.0.0",
+    "parcel": "^2.13.3"
+  }
+}

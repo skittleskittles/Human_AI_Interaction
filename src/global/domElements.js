@@ -1,0 +1,11 @@
+export const canvas = document.getElementById("gameCanvas");
+export const ctx = canvas.getContext("2d");
+export const info = document.getElementById("info");
+export const aiinfo = document.getElementById("aiinfo");
+export const infocontent = document.getElementById("infocontent");
+export const startButton = document.getElementById("startButton");
+export const replayButton = document.getElementById("replayButton");
+export const reselectButton = document.getElementById("reselectButton");
+export const interceptionButton = document.getElementById("interceptionButton");
+export const finishButton = document.getElementById("finishButton");
+export const aiRequest = document.getElementById("aiRequest");
