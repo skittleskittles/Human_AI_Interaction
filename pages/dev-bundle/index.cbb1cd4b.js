@@ -818,12 +818,16 @@ function revealAISolution() {
     }
 }
 function finishGame() {
+    console.log("Game finished, redirecting to feedback...");
+    // ✅ Stop animations (important)
     cancelAnimationFrame((0, _variableJs.globalState).animationFrameId);
-    (0, _drawingJs.clearCanvas)();
-    (0, _domElementsJs.canvas).removeEventListener("click", (0, _mouseEventsJs.handleObjectSelection));
-    (0, _domElementsJs.canvas).removeEventListener("mousemove", (0, _mouseEventsJs.handleMouseHover));
-    console.log("jump to feedback");
-    window.location.href = "/feedback.html";
+    // ✅ Redirect (no need to remove listeners)
+    setTimeout(()=>{
+        window.location.href = "/feedback.html"; // Redirect
+    }, 100);
+// window.location.replace(
+//   "https://skittleskittles.github.io/Human_AI_Interaction/feedback.html"
+// );
 }
 
 },{"../global/variable.js":"aywHw","../global/domElements.js":"iD4j1","./drawing.js":"4xh0b","./animation.js":"bRKlk","./initialize.js":"lsRQu","./mouseEvents.js":"aDgsz","./computation/solutionEvaluator.js":"7Gapw","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4xh0b":[function(require,module,exports,__globalThis) {

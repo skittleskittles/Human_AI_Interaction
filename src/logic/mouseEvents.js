@@ -11,7 +11,6 @@ import {
   reselectButton,
   interceptionButton,
 } from "../global/domElements";
-import { startInterceptionSequence } from "./gameEvents";
 
 // Function to handle mouse hover
 export function handleMouseHover(event) {

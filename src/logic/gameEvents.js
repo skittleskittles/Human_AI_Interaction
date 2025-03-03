@@ -143,14 +143,14 @@ export function revealAISolution() {
 }
 
 export function finishGame() {
+  console.log("Game finished, redirecting to feedback...");
   cancelAnimationFrame(globalState.animationFrameId);
-  clearCanvas();
-  canvas.removeEventListener("click", handleObjectSelection);
-  canvas.removeEventListener("mousemove", handleMouseHover);
 
-  console.log("jump to feedback");
-  window.location.replace(
-    "https://skittleskittles.github.io/Human_AI_Interaction/feedback.html"
-  );
-  // window.location.href = "/feedback.html";
+  const isLocal = window.location.hostname === "localhost";
+  const feedbackPath = isLocal
+    ? "/feedback.html"
+    : "/Human_AI_Interaction/feedback.html";
+  setTimeout(() => {
+    window.location.href = feedbackPath;
+  }, 100);
 }
