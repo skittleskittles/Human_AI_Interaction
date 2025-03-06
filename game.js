@@ -183,9 +183,9 @@ function animateInterception() {
     startButton.style.display = "block";
     valNow = Math.round(playerSolution.totalValueProp * 100);
     if (!isInCircle) {
-      infocontent.innerHTML = `<p>Reached outside of the circle</p><p>Point value achieved: ${valNow}% of the best AI solution.</p>`;
+      infoContent.innerHTML = `<p>Reached outside of the circle</p><p>Point value achieved: ${valNow}% of the best AI solution.</p>`;
     } else {
-      infocontent.innerHTML = `<p>Finished interception sequence</p><p>Point value achieved: ${valNow}% of the best AI solution.</p>`;
+      infoContent.innerHTML = `<p>Finished interception sequence</p><p>Point value achieved: ${valNow}% of the best AI solution.</p>`;
     }
   }
 }
@@ -233,7 +233,7 @@ function startDemo() {
   aiRequest.disabled = true;
 
   // Update the info div
-  infocontent.innerHTML = "<p>Example sequence in progress...</p>";
+  infoContent.innerHTML = "<p>Example sequence in progress...</p>";
   canshowRequestAI = false;
 
   // Initialize the objects and the player positions, direction and speed
@@ -284,7 +284,7 @@ function startInterceptionSequence() {
   interceptionCounter = 0; // the index of the interception path
   interceptionFrame = 0;
 
-  infocontent.innerHTML = "<p>Interception sequence in progress...</p>";
+  infoContent.innerHTML = "<p>Interception sequence in progress...</p>";
   canshowRequestAI = false;
 
   // Start the interception animation
@@ -293,9 +293,9 @@ function startInterceptionSequence() {
 
 function endDemo() {
   cancelAnimationFrame(animationFrameId);
-  infocontent.innerHTML = `<p><center>OR</center></p><p>When ready, click on ${NUM_SELECTIONS} objects to determine the order of interception. The goal is to maximize the point value across successfully intercepted objects</p>`;
+  infoContent.innerHTML = `<p><center>OR</center></p><p>When ready, click on ${NUM_SELECTIONS} objects to determine the order of interception. The goal is to maximize the point value across successfully intercepted objects</p>`;
   if (AI_HELP == 1) {
-    infocontent.innerHTML += `<p>The suggested AI solution is shown in blue </p>`;
+    infoContent.innerHTML += `<p>The suggested AI solution is shown in blue </p>`;
   }
   canvas.addEventListener("click", handleObjectSelection);
   canvas.addEventListener("mousemove", handleMouseHover);
@@ -347,11 +347,11 @@ function revealAISolution() {
 function initGame(seed) {
   //
   if (AI_HELP == 0) {
-    aiinfo.innerHTML = `<p>AI assistance will not be available in this session. </p>`;
+    aiInfoContent.innerHTML = `<p>AI assistance will not be available in this session. </p>`;
   } else if (AI_HELP == 1) {
-    aiinfo.innerHTML = `<p>AI assistance will be available in this session. </p>`;
+    aiInfoContent.innerHTML = `<p>AI assistance will be available in this session. </p>`;
   } else if (AI_HELP == 2) {
-    aiinfo.innerHTML = `<p>AI assistance is available on request in this session. </p>`;
+    aiInfoContent.innerHTML = `<p>AI assistance is available on request in this session. </p>`;
   }
 
   // Enumerate all possible interception sequences of length NUM_SELECTIONS
@@ -359,9 +359,9 @@ function initGame(seed) {
   permutations = generatePermutations(indices, NUM_SELECTIONS);
 
   randomGenerator = lcg(seed); // Initialize random generator with the provided seed
-  //infocontent.innerHTML = '<p>Measuring display refresh rate...</p>';
-  //infocontent.innerHTML = `<p>Refresh rate detected: ${refreshRate} Hz. Press the button to start the game.</p>`;
-  infocontent.innerHTML = `<p>Press the button to start. Please observe the sequence carefully.</p>`;
+  //infoContent.innerHTML = '<p>Measuring display refresh rate...</p>';
+  //infoContent.innerHTML = `<p>Refresh rate detected: ${refreshRate} Hz. Press the button to start the game.</p>`;
+  infoContent.innerHTML = `<p>Press the button to start. Please observe the sequence carefully.</p>`;
   clearCanvas();
   drawGameCircle();
   startButton.style.display = "block";

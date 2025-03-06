@@ -1,4 +1,4 @@
-import { globalState } from "../global/variable";
+import { globalState } from "../data/variable";
 
 // Utility Functions
 export function getUrlParameters() {
@@ -42,4 +42,18 @@ export function sampleBeta(alpha, beta) {
   const x = sampleGamma(alpha);
   const y = sampleGamma(beta);
   return x / (x + y); // Transform Gamma samples to Beta
+}
+
+export function generateUID(length = 16) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let uid = "";
+  const array = new Uint8Array(length);
+  window.crypto.getRandomValues(array);
+
+  for (let i = 0; i < length; i++) {
+    uid += chars[array[i] % chars.length];
+  }
+
+  return uid;
 }

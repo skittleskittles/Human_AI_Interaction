@@ -1,15 +1,18 @@
+import(/* webpackPrefetch: true */ './feedback.js');
 import {
-  aiinfo,
+  aiInfo,
+  aiInfoContent,
   startButton,
-  infocontent,
+  infoContent,
   reselectButton,
   interceptionButton,
   aiRequest,
   finishButton,
-} from "./global/domElements";
-import { randSeed } from "./global/constant";
-import { globalState } from "./global/variable";
-import { getUrlParameters, lcg } from "./utils/utils";
+} from "./data/domElements";
+import { randSeed } from "./data/constant";
+import { globalState } from "./data/variable";
+import { User } from "./data/model";
+import { getUrlParameters, lcg, generateUID } from "./utils/utils";
 import { generatePermutations } from "./logic/computation/solutionEvaluator";
 import {
   startTrail,
@@ -21,6 +24,7 @@ import {
 import { clearCanvas, drawGameCircle } from "./logic/drawing";
 
 let urlParams = getUrlParameters();
+
 if (urlParams.NUM_SELECTIONS !== undefined) {
   globalState.NUM_SELECTIONS = Number(urlParams.NUM_SELECTIONS);
 }
@@ -34,15 +38,21 @@ if (urlParams.AI_HELP !== undefined) {
   globalState.AI_HELP = Number(urlParams.AI_HELP);
 }
 
+User.prolific_pid = generateUID();
+if (urlParams.PROLIFIC_PID !== undefined) {
+  User.prolific_pid = Number(urlParams.PROLIFIC_PID);
+}
+
 // Initial setup
 function initGame(seed) {
   //
   if (globalState.AI_HELP == 0) {
-    aiinfo.innerHTML = `<p>AI assistance will not be available in this session. </p>`;
+    aiInfo.style.display = "none";
+    aiInfoContent.innerHTML = `<p>AI assistance will not be available in this session. </p>`;
   } else if (globalState.AI_HELP == 1) {
-    aiinfo.innerHTML = `<p>AI assistance will be available in this session. </p>`;
+    aiInfoContent.innerHTML = `<p>AI assistance will be available in this session. </p>`;
   } else if (globalState.AI_HELP == 2) {
-    aiinfo.innerHTML = `<p>AI assistance is available on request in this session. </p>`;
+    aiInfoContent.innerHTML = `<p>AI assistance is available on request in this session. </p>`;
   }
 
   // Enumerate all possible interception sequences of length NUM_SELECTIONS
@@ -53,9 +63,9 @@ function initGame(seed) {
   );
 
   globalState.randomGenerator = lcg(seed); // Initialize random generator with the provided seed
-  //infocontent.innerHTML = '<p>Measuring display refresh rate...</p>';
-  //infocontent.innerHTML = `<p>Refresh rate detected: ${refreshRate} Hz. Press the button to start the game.</p>`;
-  infocontent.innerHTML = `<p>Press the button to start. Please observe the sequence carefully.</p>`;
+  //infoContent.innerHTML = '<p>Measuring display refresh rate...</p>';
+  //infoContent.innerHTML = `<p>Refresh rate detected: ${refreshRate} Hz. Press the button to start the game.</p>`;
+  infoContent.innerHTML = `<p>Press the button to start. Please observe the sequence carefully.</p>`;
   clearCanvas();
   drawGameCircle();
   startButton.style.display = "block";

@@ -1,4 +1,4 @@
-import { globalState } from "../global/variable.js";
+import { globalState } from "../data/variable.js";
 import {
   canvas,
   startButton,
@@ -6,8 +6,8 @@ import {
   interceptionButton,
   reselectButton,
   aiRequest,
-  infocontent,
-} from "../global/domElements.js";
+  infoContent,
+} from "../data/domElements.js";
 import {
   clearCanvas,
   drawGameCircle,
@@ -17,10 +17,7 @@ import {
 import { animateObjects, animateInterception } from "./animation.js";
 import { initializeObjects, initializePlayer } from "./initialize.js";
 import { handleObjectSelection, handleMouseHover } from "./mouseEvents.js";
-import {
-  lookupInterceptionPaths,
-  enumerateAllSolutions,
-} from "./computation/solutionEvaluator.js";
+import { lookupInterceptionPaths } from "./computation/solutionEvaluator.js";
 
 export function startTrail() {
   globalState.curTrial++;
@@ -32,7 +29,7 @@ export function startTrail() {
   aiRequest.disabled = true;
 
   // Update the info div
-  infocontent.innerHTML = "<p>Example sequence in progress...</p>";
+  infoContent.innerHTML = "<p>Example sequence in progress...</p>";
   globalState.canshowRequestAI = false;
 
   // Initialize the objects and the player positions, direction and speed
@@ -82,7 +79,7 @@ export function startInterceptionSequence() {
   globalState.interceptionCounter = 0; // the index of the interception path
   globalState.interceptionFrame = 0;
 
-  infocontent.innerHTML = "<p>Interception sequence in progress...</p>";
+  infoContent.innerHTML = "<p>Interception sequence in progress...</p>";
   globalState.canshowRequestAI = false;
 
   // Start the interception animation
@@ -91,9 +88,9 @@ export function startInterceptionSequence() {
 
 export function endDemo() {
   cancelAnimationFrame(globalState.animationFrameId);
-  infocontent.innerHTML = `<p><center>OR</center></p><p>When ready, click on ${globalState.NUM_SELECTIONS} objects to determine the order of interception. The goal is to maximize the point value across successfully intercepted objects</p>`;
+  infoContent.innerHTML = `<p><center>OR</center></p><p>When ready, click on ${globalState.NUM_SELECTIONS} objects to determine the order of interception. The goal is to maximize the point value across successfully intercepted objects</p>`;
   if (globalState.AI_HELP == 1) {
-    infocontent.innerHTML += `<p>The suggested AI solution is shown in blue </p>`;
+    infoContent.innerHTML += `<p>The suggested AI solution is shown in blue </p>`;
   }
   canvas.addEventListener("click", handleObjectSelection);
   canvas.addEventListener("mousemove", handleMouseHover);
@@ -103,8 +100,13 @@ export function endDemo() {
   replayButton.style.display = "block";
   replayButton.addEventListener("click", replayDemo);
 
-  [globalState.allSolutions, globalState.bestSolution] =
-    enumerateAllSolutions();
+  import("./computation/solutionEvaluator.js")
+    .then((module) => module.enumerateAllSolutions())
+    .then(([allSolutions, bestSolution]) => {
+      globalState.allSolutions = allSolutions;
+      globalState.bestSolution = bestSolution;
+    })
+    .catch((error) => console.error("Error loading solutions:", error));
 
   if (globalState.AI_HELP == 2) {
     aiRequest.style.display = "block";

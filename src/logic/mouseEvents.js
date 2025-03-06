@@ -1,4 +1,4 @@
-import { globalState } from "../global/variable";
+import { globalState } from "../data/variable";
 import {
   clearCanvas,
   drawGameCircle,
@@ -10,7 +10,7 @@ import {
   replayButton,
   reselectButton,
   interceptionButton,
-} from "../global/domElements";
+} from "../data/domElements";
 
 // Function to handle mouse hover
 export function handleMouseHover(event) {

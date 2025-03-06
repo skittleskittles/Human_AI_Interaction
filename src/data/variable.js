@@ -4,7 +4,7 @@ export const globalState = {
   AI_HELP: 0,
 
   curTrial: 0,
-  totalTrials: 2,
+  totalTrials: 1,
 
   randomGenerator: null, // Global variables for random generator (implements deterministic sequence that can be recreated in other languages)
   centerX: 0,

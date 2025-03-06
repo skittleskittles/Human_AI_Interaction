@@ -7,8 +7,8 @@ import {
   OBSERVATION_FRAMES,
   alphaParam,
   betaParam,
-} from "../global/constant.js";
-import { globalState } from "../global/variable.js";
+} from "../data/constant.js";
+import { globalState } from "../data/variable.js";
 import { sampleBeta } from "../utils/utils.js";
 
 export function initializeObjects(isEasyMode) {
