@@ -14,21 +14,38 @@
     ]
   },
   "scripts": {
-    "start": "parcel serve ./pages/*.html --dist-dir ./pages/dev-bundle/ --no-hmr",
-    "build": "cd pages && parcel build ./*.html --dist-dir ./bundle/ --public-url . --no-cache --no-content-hash",
-    "deploy": "gh-pages -d ./pages/bundle/"
+    "start": "webpack serve --open --no-cache",
+    "build": "webpack --mode production --no-cache",
+    "deploy": "gh-pages -d dist"
   },
   "files": [
     "src/*"
   ],
   "dependencies": {
+    "firebase": "^11.4.0",
     "mathjs": "^14.3.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.9",
+    "@babel/preset-env": "^7.26.9",
     "@eslint/js": "^9.21.0",
+    "babel-loader": "^10.0.0",
+    "buffer": "^6.0.3",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^13.0.0",
+    "css-loader": "^7.1.2",
     "eslint": "^9.21.0",
+    "file-loader": "^6.2.0",
     "gh-pages": "^6.3.0",
     "globals": "^16.0.0",
-    "parcel": "^2.13.3"
-  }
+    "html-webpack-plugin": "^5.6.3",
+    "process": "^0.11.10",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.0"
+  },
+  "browserslist": [
+    "last 1 chrome version"
+  ]
 }

@@ -1,6 +1,6 @@
-import { OBSERVATION_FRAMES, GAME_RADIUS } from "../global/constant.js";
-import { globalState } from "../global/variable.js";
-import { startButton, infocontent, finishButton } from "../global/domElements.js";
+import { OBSERVATION_FRAMES, GAME_RADIUS } from "../data/constant.js";
+import { globalState } from "../data/variable.js";
+import { startButton, infoContent, finishButton } from "../data/domElements.js";
 import {
   clearCanvas,
   drawGameCircle,
@@ -63,13 +63,18 @@ function finishTrial(isInCircle, success) {
   } else {
     startButton.style.display = "block";
   }
-    
+
   let valNow = Math.round(globalState.playerSolution.totalValueProp * 100);
   if (!isInCircle || !success) {
-    infocontent.innerHTML = `<p>Reached outside of the circle</p><p>Point value achieved: ${valNow}% of the best AI solution.</p>`;
+    infoContent.innerHTML = `<p>Reached outside of the circle</p><p>Your score: ${valNow}</p>`;
   } else {
-    infocontent.innerHTML = `<p>Finished interception sequence</p><p>Point value achieved: ${valNow}% of the best AI solution.</p>`;
+    infoContent.innerHTML = `<p>Finished interception sequence</p><p>Your score: ${valNow}</p>`;
   }
+
+  // save data to firebase
+  import("../firebase/dataProcessor.js").then((module) =>
+    module.saveTrialData()
+  );
 }
 
 // Function to update object positions

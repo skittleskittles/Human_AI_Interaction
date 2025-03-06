@@ -1,6 +1,6 @@
-import { ARROW_FACTOR, GAME_RADIUS, playerImage } from "../global/constant.js";
-import { globalState } from "../global/variable.js";
-import { canvas, ctx } from "../global/domElements.js";
+import { ARROW_FACTOR, GAME_RADIUS, playerImage }from "../data/constant.js";
+import { globalState } from "../data/variable.js";
+import { canvas, ctx } from "../data/domElements.js";
 
 // Function to draw arrows indicating direction and speed
 export function drawArrows() {

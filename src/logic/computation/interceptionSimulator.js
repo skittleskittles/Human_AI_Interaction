@@ -1,5 +1,5 @@
-import { globalState } from "../../global/variable";
-import { GAME_RADIUS } from "../../global/constant";
+import { globalState } from "../../data/variable";
+import { GAME_RADIUS } from "../../data/constant";
 
 export function attemptIntercept(
   isInProgress,
