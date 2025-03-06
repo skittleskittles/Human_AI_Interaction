@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Game Feedback</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -12,7 +9,7 @@
         padding: 0;
         background-color: #f4f4f4;
       }
-      .container {
+      .container2 {
         width: 50%;
         margin: 50px auto;
         background: white;
@@ -60,7 +57,7 @@
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class="container2">
       <h2>Game Feedback Survey</h2>
       <p>Thank you for playing! Please share your feedback.</p>
 
@@ -100,29 +97,5 @@
 
       <p id="thankYouMessage">Thank you for your feedback!</p>
     </div>
-
-    <script>
-      document.getElementById("submitFeedback").onclick = function () {
-        let enjoyment = document.getElementById("enjoyment").value;
-        let difficulty = document.getElementById("difficulty").value;
-        let issues = document.getElementById("issues").value.trim();
-        let comments = document.getElementById("comments").value.trim();
-
-        let feedbackData = {
-          enjoyment: parseInt(enjoyment),
-          difficulty: parseInt(difficulty),
-          issues: issues,
-          comments: comments,
-        };
-
-        console.log("📌 User Feedback:", feedbackData);
-
-        // Hide form and show thank-you message
-        document.getElementById("submitFeedback").style.display = "none";
-        document.getElementById("thankYouMessage").style.display = "block";
-
-        // Optionally, you can store feedback in localStorage or send it to a backend
-      };
-    </script>
   </body>
 </html>

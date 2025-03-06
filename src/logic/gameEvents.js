@@ -7,6 +7,8 @@ import {
   reselectButton,
   aiRequest,
   infoContent,
+  experimentContainer,
+  feedbackContainer,
 } from "../data/domElements.js";
 import {
   clearCanvas,
@@ -148,11 +150,39 @@ export function finishGame() {
   console.log("Game finished, redirecting to feedback...");
   cancelAnimationFrame(globalState.animationFrameId);
 
-  const isLocal = window.location.hostname === "localhost";
-  const feedbackPath = isLocal
-    ? "/feedback.html"
-    : "/Human_AI_Interaction/feedback.html";
-  setTimeout(() => {
-    window.location.href = feedbackPath;
-  }, 100);
+  // Hide the main game container
+  experimentContainer.style.display = "none";
+
+  // Fetch and insert feedback form dynamically
+  fetch("feedback.html")
+    .then((response) => response.text())
+    .then((html) => {
+      feedbackContainer.innerHTML = html;
+      feedbackContainer.style.display = "block";
+      console.log("Feedback form loaded successfully!");
+
+      // Attach event listener to feedback submission button
+      document
+        .getElementById("submitFeedback")
+        .addEventListener("click", function () {
+          let enjoyment = document.getElementById("enjoyment").value;
+          let difficulty = document.getElementById("difficulty").value;
+          let issues = document.getElementById("issues").value.trim();
+          let comments = document.getElementById("comments").value.trim();
+
+          let feedbackData = {
+            enjoyment: parseInt(enjoyment),
+            difficulty: parseInt(difficulty),
+            issues: issues,
+            comments: comments,
+          };
+
+          console.log("📌 User Feedback:", feedbackData);
+
+          // Show thank-you message and hide the submit button
+          document.getElementById("submitFeedback").style.display = "none";
+          document.getElementById("thankYouMessage").style.display = "block";
+        });
+    })
+    .catch((error) => console.error("Error loading feedback form:", error));
 }
