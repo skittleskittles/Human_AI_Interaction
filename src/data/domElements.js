@@ -1,3 +1,5 @@
+export const experimentContainer = document.getElementById("experimentContainer");
+export const feedbackContainer = document.getElementById("feedbackContainer");
 export const canvas = document.getElementById("gameCanvas");
 export const ctx = canvas.getContext("2d");
 export const info = document.getElementById("info");

@@ -1,12 +1,11 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: {
     main: "./src/index.js",
-    // feedback: "./src/feedback.js",
   },
   output: {
     filename: "[name].bundle.js",
@@ -19,6 +18,7 @@ module.exports = {
     static: {
       directory: path.resolve(__dirname, "dist"),
     },
+    historyApiFallback: true, // Ensures proper routing
     hot: true,
     port: 3000,
   },
@@ -54,15 +54,8 @@ module.exports = {
       chunks: ["main"],
       template: "./pages/index.html",
     }),
-    // new HtmlWebpackPlugin({
-    //   filename: "feedback.html", // Generates dist/index.html
-    //   chunks: ["feedback"],
-    //   template: "./pages/feedback.html",
-    // }),
     new CopyWebpackPlugin({
-      patterns: [
-        { from: "./pages/feedback.html", to: "feedback.html" },
-      ],
+      patterns: [{ from: "./pages/feedback.html", to: "feedback.html" }],
     }),
   ],
 };

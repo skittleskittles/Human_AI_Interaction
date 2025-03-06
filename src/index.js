@@ -1,4 +1,3 @@
-import(/* webpackPrefetch: true */ './feedback.js');
 import {
   aiInfo,
   aiInfoContent,
