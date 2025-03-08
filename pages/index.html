@@ -20,7 +20,9 @@
         margin: 20px auto;
         position: relative;
       }
-      #info {
+      #info,
+      #aiInfo,
+      #resultInfo {
         width: 400px; /* Adjust the width if needed */
         margin: 20px auto;
         padding: 20px;
@@ -30,26 +32,20 @@
         font-size: 18px;
         font-weight: bold;
         position: absolute;
-        top: 0; /* Align with the top of the canvas */
         left: 820px; /* Position to the right of the canvas */
       }
-      #info p {
-        margin: 0 0 20px 0;
+      #info {
+        top: 0; /* Align with the top of the canvas */
+      }
+      #resultInfo {
+        top: 550px; /* Adjust this value based on #info's height */
       }
       #aiInfo {
-        width: 400px; /* Same width as #info */
-        margin: 0 auto; /* Center horizontally */
-        padding: 20px;
-        background-color: #fff;
-        border: 3px solid #171717;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        font-size: 18px;
-        font-weight: bold;
-        position: absolute; /* Align with #info */
-        top: 550px; /* Adjust this value based on #info's height */
-        left: 820px; /* Same as #info to align horizontally */
+        top: 700px; /* Adjust this value based on #info's height */
       }
-      #aiInfo p {
+      #info,
+      #aiInfo,
+      #resultInfo p {
         margin: 0 0 20px 0;
       }
 
@@ -146,6 +142,14 @@
           <button id="reselectButton">Reselect</button>
           <button id="interceptionButton">Start Interception Sequence</button>
           <button type="button" id="finishButton">Finish</button>
+        </div>
+
+        <div id="resultInfo">
+          <h1>Results</h1>
+          <div id="resultInfoContent" style="text-align: left">
+            <p>Your score: (Range: 0-100)</p>
+            <p>Your choice:</p>
+          </div>
         </div>
 
         <div id="aiInfo" style="display: none">

@@ -73,8 +73,6 @@ function findMatchingPermutationIndex(permutations, selectedObjects) {
 export function enumerateAllSolutions() {
   const numSequences = globalState.permutations.length;
   let allSolutions = [];
-  let bestSolutionIndex = -1;
-  let maxValue = -Infinity;
 
   for (let i = 0; i < numSequences; i++) {
     let sequence = globalState.permutations[i];
@@ -136,23 +134,31 @@ export function enumerateAllSolutions() {
       if (!success && isInProgress) isInProgress = false;
     }
 
-    let solution = { sequence, totalValue, moves };
-    allSolutions.push(solution);
-
-    // Update best solution
-    if (totalValue > maxValue) {
-      bestSolutionIndex = i;
-      maxValue = totalValue;
+    let totalValueProp = 0,
+      interceptedCnt = 0,
+      rank = 0;
+    for (let i = 0; i < moves.length; i++) {
+      if (moves[i].success) {
+        interceptedCnt++;
+      }
     }
+
+    let solution = {
+      sequence,
+      totalValue,
+      moves,
+      rank,
+      interceptedCnt,
+      totalValueProp,
+    };
+    allSolutions.push(solution);
   }
 
-  // Normalize scores based on the best solution
-  normalizeSolutionValues(allSolutions, maxValue);
+  sortAndNormalizeSolutionValues(allSolutions);
 
-  // Logging best solution
-  logSolutions(allSolutions, bestSolutionIndex, maxValue);
+  logSolutions(allSolutions);
 
-  return [allSolutions, allSolutions[bestSolutionIndex]];
+  return [allSolutions, allSolutions[0]];
 }
 
 /**
@@ -215,23 +221,54 @@ function computeObjectValue(
 }
 
 /**
- * Normalizes all solution values relative to the maximum.
+ * Sorts the solutions by totalValue in descending order and assigns ranks.
+ * Normalizes totalValue relative to maxValue to get totalValueProp.
+ *
+ * @param {Array} solutions - An array of solution objects, each containing totalValue.
+ * @param {number} maxValue - The maximum totalValue among all solutions, used for normalization.
  */
-function normalizeSolutionValues(solutions, maxValue) {
-  for (let sol of solutions) {
-    sol.totalValueProp = sol.totalValue / maxValue;
+function sortAndNormalizeSolutionValues(solutions) {
+  // Step 1: Attach index references for tracking original order
+  solutions.forEach((solution, index) => (solution.originalIndex = index));
+
+  // Step 2: Sort solutions by totalValue in descending order
+  solutions.sort((a, b) => b.totalValue - a.totalValue);
+
+  let maxValue = solutions[0].totalValue;
+  let rank = 1;
+  for (let i = 0; i < solutions.length; i++) {
+    solutions[i].totalValueProp = solutions[i].totalValue / maxValue;
+
+    // Assign rank, ensuring tied values share the same rank
+    if (i > 0 && solutions[i].totalValue === solutions[i - 1].totalValue) {
+      solutions[i].rank = solutions[i - 1].rank;
+    } else {
+      solutions[i].rank = rank;
+    }
+    rank++;
   }
+
+  // Step 3: Reorder globalState.permutations based on the new order
+  globalState.permutations = solutions.map(
+    (solution) => globalState.permutations[solution.originalIndex]
+  );
+
+  // Step 4: Remove originalIndex as it's no longer needed
+  solutions.forEach((solution) => delete solution.originalIndex);
 }
 
 /**
  * Logs all solutions and the best one.
  */
-function logSolutions(solutions, bestSolutionIndex, maxValue) {
+function logSolutions(solutions) {
   console.log(`\n🔹 All Solutions Summary:`);
 
+  let maxValue = solutions[0].totalValue;
   solutions.forEach((sol, i) => {
     console.log(
-      `${i}: Sequence ${sol.sequence}, Score: ${sol.totalValue.toFixed(2)}`
+      `${i}: Sequence ${sol.sequence}, Score: ${sol.totalValue.toFixed(
+        2
+      )}, Rank:${sol.rank}, Intercepted Cnt:${sol.interceptedCnt}`
     );
     sol.moves.forEach((move, index) => {
       console.log(`   ↳ Move ${index}: success=${move.success}`);
@@ -240,7 +277,7 @@ function logSolutions(solutions, bestSolutionIndex, maxValue) {
 
   console.log(
     `\n🏆 Best solution = ${
-      globalState.permutations[bestSolutionIndex]
+      solutions[0].sequence
     }, maxValue = ${maxValue.toFixed(2)}`
   );
 }

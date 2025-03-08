@@ -8,7 +8,7 @@ import {
   aiRequest,
   infoContent,
   experimentContainer,
-  feedbackContainer,
+  resultInfoContent,
 } from "../data/domElements.js";
 import {
   clearCanvas,
@@ -20,6 +20,7 @@ import { animateObjects, animateInterception } from "./animation.js";
 import { initializeObjects, initializePlayer } from "./initialize.js";
 import { handleObjectSelection, handleMouseHover } from "./mouseEvents.js";
 import { lookupInterceptionPaths } from "./computation/solutionEvaluator.js";
+import { showFeedback } from "../feedback.js";
 
 export function startTrail() {
   globalState.curTrial++;
@@ -32,6 +33,7 @@ export function startTrail() {
 
   // Update the info div
   infoContent.innerHTML = "<p>Example sequence in progress...</p>";
+  resultInfoContent.innerHTML = `<p>Your score: (Range: 0-100)</p><p>Your choice:</p>`;
   globalState.canshowRequestAI = false;
 
   // Initialize the objects and the player positions, direction and speed
@@ -90,7 +92,7 @@ export function startInterceptionSequence() {
 
 export function endDemo() {
   cancelAnimationFrame(globalState.animationFrameId);
-  infoContent.innerHTML = `<p><center>OR</center></p><p>When ready, click on ${globalState.NUM_SELECTIONS} objects to determine the order of interception. The goal is to maximize the point value across successfully intercepted objects</p>`;
+  infoContent.innerHTML = `<p><center>OR</center></p><p>Click on ${globalState.NUM_SELECTIONS} objects to set the interception order.</p><p>Maximize scores by intercepting objects.</p>`;
   if (globalState.AI_HELP == 1) {
     infoContent.innerHTML += `<p>The suggested AI solution is shown in blue </p>`;
   }
@@ -148,41 +150,16 @@ export function revealAISolution() {
 
 export function finishGame() {
   console.log("Game finished, redirecting to feedback...");
+
+  // save data to firebase
+  import("../firebase/dataProcessor.js").then((module) =>
+    module.saveTrialData()
+  );
+
   cancelAnimationFrame(globalState.animationFrameId);
 
   // Hide the main game container
   experimentContainer.style.display = "none";
 
-  // Fetch and insert feedback form dynamically
-  fetch("feedback.html")
-    .then((response) => response.text())
-    .then((html) => {
-      feedbackContainer.innerHTML = html;
-      feedbackContainer.style.display = "block";
-      console.log("Feedback form loaded successfully!");
-
-      // Attach event listener to feedback submission button
-      document
-        .getElementById("submitFeedback")
-        .addEventListener("click", function () {
-          let enjoyment = document.getElementById("enjoyment").value;
-          let difficulty = document.getElementById("difficulty").value;
-          let issues = document.getElementById("issues").value.trim();
-          let comments = document.getElementById("comments").value.trim();
-
-          let feedbackData = {
-            enjoyment: parseInt(enjoyment),
-            difficulty: parseInt(difficulty),
-            issues: issues,
-            comments: comments,
-          };
-
-          console.log("📌 User Feedback:", feedbackData);
-
-          // Show thank-you message and hide the submit button
-          document.getElementById("submitFeedback").style.display = "none";
-          document.getElementById("thankYouMessage").style.display = "block";
-        });
-    })
-    .catch((error) => console.error("Error loading feedback form:", error));
+  showFeedback();
 }

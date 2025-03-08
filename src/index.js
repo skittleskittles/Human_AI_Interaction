@@ -87,5 +87,4 @@ startButton.addEventListener("click", startTrail);
 reselectButton.addEventListener("click", reselectObjects);
 interceptionButton.addEventListener("click", startInterceptionSequence);
 aiRequest.addEventListener("click", revealAISolution);
-
 finishButton.addEventListener("click", finishGame);
