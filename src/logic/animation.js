@@ -1,6 +1,10 @@
 import { OBSERVATION_FRAMES, GAME_RADIUS } from "../data/constant.js";
 import { globalState } from "../data/variable.js";
-import { startButton, infoContent, finishButton } from "../data/domElements.js";
+import {
+  startButton,
+  resultInfoContent,
+  finishButton,
+} from "../data/domElements.js";
 import {
   clearCanvas,
   drawGameCircle,
@@ -51,11 +55,11 @@ export function animateInterception() {
   if (isInCircle && status == "in progress") {
     globalState.animationFrameId = requestAnimationFrame(animateInterception);
   } else {
-    finishTrial(isInCircle, success);
+    finishTrial();
   }
 }
 
-function finishTrial(isInCircle, success) {
+function finishTrial() {
   console.log(`Finished interception sequence`);
   cancelAnimationFrame(globalState.animationFrameId);
   if (globalState.curTrial === globalState.totalTrials) {
@@ -65,16 +69,18 @@ function finishTrial(isInCircle, success) {
   }
 
   let valNow = Math.round(globalState.playerSolution.totalValueProp * 100);
-  if (!isInCircle || !success) {
-    infoContent.innerHTML = `<p>Reached outside of the circle</p><p>Your score: ${valNow}</p>`;
-  } else {
-    infoContent.innerHTML = `<p>Finished interception sequence</p><p>Your score: ${valNow}</p>`;
+  let rankNow = Math.round(globalState.playerSolution.rank);
+  let interceptedCnt = Math.round(globalState.playerSolution.interceptedCnt);
+  let scoreText = `<p>Your score: ${valNow} (Range: 0-100)</p><p>Your choice: ${rankNow}th best solution</p>`;
+  if (interceptedCnt == globalState.NUM_SELECTIONS) {
+    scoreText =
+      `<p>Successfully intercepts both selected objects</p>` + scoreText;
+  } else if (interceptedCnt == 1) {
+    scoreText = `<p>Misses Object 2 due to being out of range</p>` + scoreText;
+  } else if (interceptedCnt == 0) {
+    scoreText = `<p>Fails to intercept either selected object</p>` + scoreText;
   }
-
-  // save data to firebase
-  import("../firebase/dataProcessor.js").then((module) =>
-    module.saveTrialData()
-  );
+  resultInfoContent.innerHTML = scoreText;
 }
 
 // Function to update object positions

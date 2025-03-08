@@ -1,3 +1,5 @@
+import { infoContent, resultInfoContent } from "./src/data/domElements";
+
 // Get references to the canvas, context, info div, and start buttons
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -234,6 +236,7 @@ function startDemo() {
 
   // Update the info div
   infoContent.innerHTML = "<p>Example sequence in progress...</p>";
+  resultInfoContent.innerHTML = `<p>Your score: (Range: 0-100)</p><p>Your choice:</p>`;
   canshowRequestAI = false;
 
   // Initialize the objects and the player positions, direction and speed
