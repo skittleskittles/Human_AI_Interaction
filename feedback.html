@@ -6,7 +6,7 @@
     <title>Game Feedback Survey</title>
     <style>
       .feedbackSubContainer {
-        width: 70%;
+        width: 80%;
         margin: 20px auto 20px auto;
         background: white;
         padding: 20px;
@@ -30,11 +30,19 @@
       td:first-child {
         text-align: left;
       }
+      .th-scale {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr); /* Ensure equal spacing */
+        text-align: center;
+        width: 100%;
+        padding: 0 10px; /* Adjust padding for better alignment */
+      }
       .radio-group {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr); /* Ensure alignment */
         gap: 5px;
         width: 100%;
+        justify-items: center; /* Center the radio buttons */
       }
       .radio-group input {
         flex-grow: 1;
@@ -85,7 +93,15 @@
       <table>
         <tr>
           <th>Topic</th>
-          <th>Strongly Disagree - Strongly Agree</th>
+          <th>
+            <div class="th-scale">
+              <span>Strongly Disagree</span>
+              <span>Disagree</span>
+              <span>Neutral</span>
+              <span>Agree</span>
+              <span>Strongly Agree</span>
+            </div>
+          </th>
         </tr>
         <tr>
           <td>The game was challenging.</td>
