@@ -11,52 +11,81 @@ import {
 import { globalState } from "../data/variable.js";
 import { sampleBeta } from "../utils/utils.js";
 
-export function initializeObjects(isEasyMode) {
-  globalState.objects = [];
+export function initializeObjects(isEasyMode, needRetry) {
   globalState.selectedObjects = []; // Reset selections
   globalState.hoverObjectIndex = -1; // Reset hover index
 
-  const numObjects = globalState.NUM_OBJECTS;
-  const specialSpeed =
-    ((MAX_SPEED - MIN_SPEED) * speedMultiplier) / refreshRate;
-  const offsetX = GAME_RADIUS - GAME_RADIUS / 5; // Position special objects near the edge
-  const specialFinalRadius = Math.abs(
-    globalState.centerX - (offsetX - specialSpeed * OBSERVATION_FRAMES)
-  );
+  console.log("needRetry: ", needRetry);
+  if (isEasyMode && needRetry && globalState.lastRoundObjects.length > 0) {
+    console.log("isRetry");
+    globalState.objects = structuredClone(globalState.lastRoundObjects);
+  } else {
+    globalState.objects = [];
 
-  // 1️⃣ **Create two special objects (Left & Right, moving toward the center)**
-  if (isEasyMode) {
-    createSpecialObjects(specialSpeed, offsetX);
-  }
+    const numObjects = globalState.NUM_OBJECTS;
+    const specialSpeed =
+      ((MAX_SPEED - MIN_SPEED) * speedMultiplier) / refreshRate;
+    const offset = GAME_RADIUS - GAME_RADIUS / 5; // Position special objects near the edge
+    const specialFinalRadius = Math.abs(
+      globalState.centerX - (offset - specialSpeed * OBSERVATION_FRAMES)
+    );
 
-  // 2️⃣ **Create remaining random objects (far from the center, low value)**
-  for (let i = isEasyMode ? 2 : 0; i < numObjects; i++) {
-    let newObject = generateRandomObject(isEasyMode, specialFinalRadius);
-    globalState.objects.push(newObject);
+    // 1️⃣ **Create two special objects (Left & Right, moving toward the center)**
+    if (isEasyMode) {
+      createSpecialObjects(specialSpeed, offset);
+    }
+
+    // 2️⃣ **Create remaining random objects (far from the center, low value)**
+    for (let i = isEasyMode ? 2 : 0; i < numObjects; i++) {
+      let newObject = generateRandomObject(isEasyMode, specialFinalRadius);
+      globalState.objects.push(newObject);
+    }
+
+    globalState.lastRoundObjects = structuredClone(globalState.objects);
   }
 }
 
 /**
  * Creates two special objects that move toward the center.
  */
-function createSpecialObjects(specialSpeed, offsetX) {
-  const specialObjects = [
+function createSpecialObjects(specialSpeed, offset) {
+  const specialObjectsX = [
     {
-      x0: globalState.centerX - offsetX,
+      x0: globalState.centerX - offset,
       dX: specialSpeed,
       y0: globalState.centerY,
       dY: 0,
     },
     {
-      x0: globalState.centerX + offsetX,
+      x0: globalState.centerX + offset,
       dX: -specialSpeed,
       y0: globalState.centerY,
       dY: 0,
     },
   ];
 
-  for (let i = 0; i < specialObjects.length; i++) {
-    const { x0, y0, dX, dY } = specialObjects[i];
+  const specialObjectsY = [
+    {
+      x0: globalState.centerX,
+      dX: 0,
+      y0: globalState.centerY - offset,
+      dY: specialSpeed,
+    },
+    {
+      x0: globalState.centerX,
+      dX: 0,
+      y0: globalState.centerY + offset,
+      dY: -specialSpeed,
+    },
+  ];
+
+  for (let i = 0; i < 2; i++) {
+    let x0, y0, dX, dY;
+    if (globalState.curTrial == 1) {
+      ({ x0, y0, dX, dY } = specialObjectsX[i]);
+    } else {
+      ({ x0, y0, dX, dY } = specialObjectsY[i]);
+    }
 
     globalState.objects.push({
       x0,

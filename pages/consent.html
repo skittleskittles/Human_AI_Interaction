@@ -23,15 +23,24 @@
         border: 3px solid #003366;
         text-align: left;
       }
-      .consentSubContainer hr {
-        margin-top: 30px;
-        margin-bottom: 30px;
+
+      .header-container {
+        display: flex;
+        justify-content: space-between; /* Distributes items evenly */
+        align-items: center; /* Aligns vertically */
+        padding-left: 50px;
+        padding-right: 20px; /* Adds spacing */
+        margin-bottom: 10px;
       }
       .welcomeText {
-        text-align: center;
         font-weight: bold;
         font-size: 30px;
         color: #305f8e;
+      }
+
+      .consentSubContainer hr {
+        margin-top: 30px;
+        margin-bottom: 30px;
       }
       .section-title {
         font-weight: bold;
@@ -98,8 +107,12 @@
     <!-- <div class="header">Target Intercept Game</div> -->
 
     <div class="consentSubContainer">
-      <p class="welcomeText">Welcome to the experiment!</p>
-
+      <div class="header-container">
+        <p class="welcomeText">Welcome to the experiment!</p>
+        <div class="logo-container">
+          <img src="../assets/uci_logo2.png" alt="UCI Logo" />
+        </div>
+      </div>
       <ul class="bullet-list">
         <li>
           Please carefully read the information below before you decide to
@@ -116,7 +129,7 @@
 
       <hr />
 
-      <h2 style="text-align: center;">Study Information Sheet</h2>
+      <h2 style="text-align: center">Study Information Sheet</h2>
       <p class="section-title">Project Summary</p>
       <p class="section-content">
         This experiment examines how people plan and adapt in a dynamic
@@ -142,10 +155,10 @@
         You may participate only once in this study. You are eligible to
         participate in this study if you are:
       </p>
-      <ul style="margin-left: 20px;">
-        <li style="margin-bottom: 5px;">A United States citizen/resident</li>
-        <li style="margin-bottom: 5px;">18 years or older</li>
-        <li style="margin-bottom: 5px;">An English speaker</li>
+      <ul style="margin-left: 20px">
+        <li style="margin-bottom: 5px">A United States citizen/resident</li>
+        <li style="margin-bottom: 5px">18 years or older</li>
+        <li style="margin-bottom: 5px">An English speaker</li>
       </ul>
 
       <p class="section-title">Reimbursement & Compensation</p>
@@ -194,8 +207,8 @@
         <input type="checkbox" id="confirmParticipation" />
         <label for="confirmParticipation"
           ><strong>Check here</strong> to confirm that: you have read and
-          understood this <em>Study Information Sheet</em>, you are taking
-          part in this research study voluntarily, you meet the eligibility
+          understood this <em>Study Information Sheet</em>, you are taking part
+          in this research study voluntarily, you meet the eligibility
           requirements, and you agree that your anonymized data may be shared in
           public repositories.</label
         >

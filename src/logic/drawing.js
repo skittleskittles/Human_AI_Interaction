@@ -1,4 +1,4 @@
-import { ARROW_FACTOR, GAME_RADIUS, playerImage }from "../data/constant.js";
+import { ARROW_FACTOR, GAME_RADIUS, playerImage } from "../data/constant.js";
 import { globalState } from "../data/variable.js";
 import { canvas, ctx } from "../data/domElements.js";
 
@@ -104,12 +104,14 @@ export function drawObjects() {
       ctx.fill();
 
       // Set text alignment and baseline for centering
-      ctx.textAlign = "center"; // Aligns text horizontally to the center
-      ctx.textBaseline = "middle"; // Aligns text vertically to the center
-      ctx.fillStyle = "rgb(0, 0, 0)";
-      let fontSize = 20;
-      ctx.font = `${fontSize}px Arial`;
-      ctx.fillText(index, object.x, object.y);
+      if (globalState.isDebugMode) {
+        ctx.textAlign = "center"; // Aligns text horizontally to the center
+        ctx.textBaseline = "middle"; // Aligns text vertically to the center
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        let fontSize = 20;
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillText(index, object.x, object.y);
+      }
 
       // Draw the object's border
       ctx.beginPath();
