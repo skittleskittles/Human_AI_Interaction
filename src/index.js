@@ -21,6 +21,7 @@ import {
   finishGame,
 } from "./logic/gameEvents";
 import { clearCanvas, drawGameCircle } from "./logic/drawing";
+import { showConsent } from "./instructions";
 
 let urlParams = getUrlParameters();
 
@@ -74,17 +75,28 @@ function initGame(seed) {
 /*
 --------------------------------------------------------------------------------------
 
+    Instructions
+
+--------------------------------------------------------------------------------------
+*/
+showConsent();
+
+/*
+--------------------------------------------------------------------------------------
+
     Starting the game
 
 --------------------------------------------------------------------------------------
 */
 
 // Start initialization on page load with a seed
-initGame(randSeed); // Replace 12345 with any desired seed
+export function startGame() {
+  initGame(randSeed); // Replace 12345 with any desired seed
 
-// Add event listeners to buttons
-startButton.addEventListener("click", startTrail);
-reselectButton.addEventListener("click", reselectObjects);
-interceptionButton.addEventListener("click", startInterceptionSequence);
-aiRequest.addEventListener("click", revealAISolution);
-finishButton.addEventListener("click", finishGame);
+  // Add event listeners to buttons
+  startButton.addEventListener("click", startTrail);
+  reselectButton.addEventListener("click", reselectObjects);
+  interceptionButton.addEventListener("click", startInterceptionSequence);
+  aiRequest.addEventListener("click", revealAISolution);
+  finishButton.addEventListener("click", finishGame);
+}

@@ -55,7 +55,10 @@ module.exports = {
       template: "./pages/index.html",
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "./pages/feedback.html", to: "feedback.html" }],
+      patterns: [
+        { from: "./pages/consent.html", to: "consent.html" },
+        { from: "./pages/feedback.html", to: "feedback.html" },
+      ],
     }),
   ],
 };
