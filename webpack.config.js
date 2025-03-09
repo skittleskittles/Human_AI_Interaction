@@ -56,7 +56,7 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: "assets", to: "assets" },
+        { from: "assets", to: "" },
         { from: "./pages/consent.html", to: "consent.html" },
         { from: "./pages/modal.html", to: "modal.html" },
         { from: "./pages/feedback.html", to: "feedback.html" },

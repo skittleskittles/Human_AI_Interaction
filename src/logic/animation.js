@@ -150,7 +150,6 @@ function updatePlayerPosition() {
       currentMove =
         globalState.playerSolution.moves[globalState.interceptionCounter];
     } else {
-      console.log("Finished with interception sequence");
       status = "finished";
       return status;
     }
