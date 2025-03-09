@@ -154,7 +154,7 @@ export function revealAISolution() {
 }
 
 export function finishGame(isPass) {
-  console.log("Game finished, redirecting to feedback...");
+  console.log("Game finished");
 
   cancelAnimationFrame(globalState.animationFrameId);
 

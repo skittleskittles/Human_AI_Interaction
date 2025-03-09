@@ -107,6 +107,7 @@ export function startGame() {
   reselectButton.addEventListener("click", reselectObjects);
   interceptionButton.addEventListener("click", startInterceptionSequence);
   aiRequest.addEventListener("click", revealAISolution);
+  finishButton.style.display = "block";
   finishButton.addEventListener("click", () => {
     finishGame(true);
   });

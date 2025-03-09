@@ -15,9 +15,7 @@ export function initializeObjects(isEasyMode, needRetry) {
   globalState.selectedObjects = []; // Reset selections
   globalState.hoverObjectIndex = -1; // Reset hover index
 
-  console.log("needRetry: ", needRetry);
   if (isEasyMode && needRetry && globalState.lastRoundObjects.length > 0) {
-    console.log("isRetry");
     globalState.objects = structuredClone(globalState.lastRoundObjects);
   } else {
     globalState.objects = [];
