@@ -272,9 +272,9 @@ function logSolutions(solutions) {
         2
       )}, Rank:${sol.rank}, Intercepted Cnt:${sol.interceptedCnt}`
     );
-    sol.moves.forEach((move, index) => {
-      console.log(`   ↳ Move ${index}: success=${move.success}`);
-    });
+    // sol.moves.forEach((move, index) => {
+    //   console.log(`   ↳ Move ${index}: success=${move.success}`);
+    // });
   });
 
   console.log(
