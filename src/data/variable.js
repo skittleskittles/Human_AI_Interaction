@@ -1,10 +1,17 @@
 export const globalState = {
   NUM_SELECTIONS: 2, // Maximum number of objects to select
-  NUM_OBJECTS: 5, // Number of animated objects
+  NUM_OBJECTS: 10, // Number of animated objects
+  NUM_MAIN_TRIALS: 15,
+  NUM_EDUCATION_TRIALS: 2,
   AI_HELP: 0,
 
+  isEasyMode: false,
+  needRetry: false,
+  retryCnt: 0,
+
   curTrial: 0,
-  totalTrials: 3,
+
+  isDebugMode: false,
 
   randomGenerator: null, // Global variables for random generator (implements deterministic sequence that can be recreated in other languages)
   centerX: 0,
@@ -13,6 +20,7 @@ export const globalState = {
   animationFrameId: 0,
   animationStartTime: 0,
   objects: [], // Array to hold object properties
+  lastRoundObjects: [], // Array to hold object properties
   selectedObjects: [], // Tracks selected objects for interception sequence
   hoverObjectIndex: -1, // Tracks which object is being hovered over
   speedMultiplier: 1, // Multiplier to adjust speed based on refresh rate

@@ -23,19 +23,28 @@ import {
 import { clearCanvas, drawGameCircle } from "./logic/drawing";
 import { showConsent } from "./instructions";
 
+if (window.location.hostname === "localhost") {
+  const url = new URL(window.location.href);
+  url.searchParams.set("DEBUG", "true");
+  window.history.replaceState({}, "", url);
+}
+
 let urlParams = getUrlParameters();
 
 if (urlParams.NUM_SELECTIONS !== undefined) {
   globalState.NUM_SELECTIONS = Number(urlParams.NUM_SELECTIONS);
 }
 if (urlParams.NUM_TRIALS !== undefined) {
-  globalState.totalTrials = Number(urlParams.NUM_TRIALS);
+  globalState.NUM_MAIN_TRIALS = Number(urlParams.NUM_TRIALS);
 }
 if (urlParams.NUM_OBJECTS !== undefined) {
   globalState.NUM_OBJECTS = Number(urlParams.NUM_OBJECTS);
 }
 if (urlParams.AI_HELP !== undefined) {
   globalState.AI_HELP = Number(urlParams.AI_HELP);
+}
+if (urlParams.DEBUG !== undefined) {
+  globalState.isDebugMode = urlParams.DEBUG;
 }
 
 User.prolific_pid = generateUID();
@@ -98,5 +107,7 @@ export function startGame() {
   reselectButton.addEventListener("click", reselectObjects);
   interceptionButton.addEventListener("click", startInterceptionSequence);
   aiRequest.addEventListener("click", revealAISolution);
-  finishButton.addEventListener("click", finishGame);
+  finishButton.addEventListener("click", () => {
+    finishGame(true);
+  });
 }

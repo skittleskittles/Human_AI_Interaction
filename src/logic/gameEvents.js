@@ -23,7 +23,12 @@ import { lookupInterceptionPaths } from "./computation/solutionEvaluator.js";
 import { showFeedback } from "../feedback.js";
 
 export function startTrail() {
-  globalState.curTrial++;
+  if (globalState.needRetry) {
+    globalState.retryCnt++;
+  } else {
+    globalState.curTrial++;
+  }
+
   console.log(`------curTrail: ${globalState.curTrial}---------`);
 
   // Hide the start round button
@@ -37,7 +42,7 @@ export function startTrail() {
   globalState.canshowRequestAI = false;
 
   // Initialize the objects and the player positions, direction and speed
-  initializeObjects(globalState.curTrial === 1);
+  initializeObjects(globalState.isEasyMode, globalState.needRetry);
   initializePlayer();
 
   // Reset frame counter for the demo
@@ -148,18 +153,20 @@ export function revealAISolution() {
   }
 }
 
-export function finishGame() {
+export function finishGame(isPass) {
   console.log("Game finished, redirecting to feedback...");
-
-  // save data to firebase
-  import("../firebase/dataProcessor.js").then((module) =>
-    module.saveTrialData()
-  );
 
   cancelAnimationFrame(globalState.animationFrameId);
 
   // Hide the main game container
   experimentContainer.style.display = "none";
 
-  showFeedback();
+  if (isPass) {
+    // save data to firebase
+    import("../firebase/dataProcessor.js").then((module) =>
+      module.saveTrialData()
+    );
+    showFeedback();
+  }
+  // TODO: redirect to prolific
 }

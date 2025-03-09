@@ -4,6 +4,7 @@ import {
   startButton,
   resultInfoContent,
   finishButton,
+  infoContent,
 } from "../data/domElements.js";
 import {
   clearCanvas,
@@ -11,7 +12,12 @@ import {
   drawObjects,
   drawPlayer,
 } from "./drawing.js";
-import { endDemo } from "./gameEvents.js";
+import { endDemo, finishGame } from "./gameEvents.js";
+import {
+  showEndGame,
+  showEnterMainGame,
+  showEnterRetryTrials,
+} from "../instructions.js";
 
 export function animateObjects() {
   // Update positions and redraw
@@ -35,7 +41,7 @@ export function animateObjects() {
 export function animateInterception() {
   // Update positions and redraw
   updateObjectPositions(globalState.totalFrames);
-  let [status, success] = updatePlayerPosition();
+  let status = updatePlayerPosition();
   clearCanvas();
   drawGameCircle();
   drawObjects();
@@ -62,11 +68,14 @@ export function animateInterception() {
 function finishTrial() {
   console.log(`Finished interception sequence`);
   cancelAnimationFrame(globalState.animationFrameId);
-  if (globalState.curTrial === globalState.totalTrials) {
+
+  if (globalState.curTrial === globalState.NUM_MAIN_TRIALS) {
     finishButton.style.display = "block";
   } else {
     startButton.style.display = "block";
   }
+
+  infoContent.innerHTML = `<p>Finished interception sequence</p>`;
 
   let valNow = Math.round(globalState.playerSolution.totalValueProp * 100);
   let rankNow = Math.round(globalState.playerSolution.rank);
@@ -81,6 +90,36 @@ function finishTrial() {
     scoreText = `<p>Fails to intercept either selected object</p>` + scoreText;
   }
   resultInfoContent.innerHTML = scoreText;
+
+  if (globalState.isEasyMode) {
+    if (valNow == 100) {
+      // Correct answer selected
+      globalState.needRetry = false;
+      globalState.retryCnt = 0;
+
+      // If this is the last trial in the educational phase, switch to main game mode
+      if (globalState.curTrial == globalState.NUM_EDUCATION_TRIALS) {
+        globalState.isEasyMode = false; // Exit easy mode
+        globalState.needRetry = false; // No retries needed
+        globalState.curTrial = 0; // Reset trial counter
+        globalState.retryCnt = 0; // Reset retry counter
+        showEnterMainGame(); // Proceed to main game
+      }
+    } else {
+      // Incorrect answer selected
+      globalState.needRetry = true;
+
+      if (globalState.retryCnt < 1) {
+        // Allow only one retry for incorrect answers
+        showEnterRetryTrials();
+      } else {
+        // Player failed even after retry → End game
+        showEndGame();
+        finishGame(false);
+        // TODO: Implement game-ending logic
+      }
+    }
+  }
 }
 
 // Function to update object positions
@@ -100,9 +139,7 @@ function updatePlayerPosition() {
   globalState.interceptionFrame += 1;
 
   let status = "in progress";
-  let success = false;
   if (globalState.interceptionFrame == currentMove.timeToIntercept) {
-    success = currentMove.success;
     globalState.objects[currentObject].isIntercepted = currentMove.success;
     globalState.interceptionFrame = 0; // reset counter for the next object
     globalState.interceptionCounter += 1;
@@ -115,12 +152,12 @@ function updatePlayerPosition() {
     } else {
       console.log("Finished with interception sequence");
       status = "finished";
-      return [status, success];
+      return status;
     }
   }
 
   globalState.player.x += currentMove.dX;
   globalState.player.y += currentMove.dY;
 
-  return [status, success];
+  return status;
 }

@@ -156,7 +156,9 @@ export function enumerateAllSolutions() {
 
   sortAndNormalizeSolutionValues(allSolutions);
 
-  logSolutions(allSolutions);
+  if (globalState.isDebugMode) {
+    logSolutions(allSolutions);
+  }
 
   return [allSolutions, allSolutions[0]];
 }

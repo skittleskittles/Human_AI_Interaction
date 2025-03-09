@@ -33,6 +33,7 @@ export const aiRequest = document.getElementById("aiRequest");
  *
  */
 export const consentContainer = document.getElementById("consentContainer");
+export const modalContainer = document.getElementById("modalContainer");
 
 /**
  *
