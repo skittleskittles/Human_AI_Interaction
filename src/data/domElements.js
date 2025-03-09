@@ -1,7 +1,7 @@
 /**
- * 
+ *
  * index.html
- * 
+ *
  */
 export const experimentContainer = document.getElementById(
   "experimentContainer"
@@ -28,10 +28,15 @@ export const finishButton = document.getElementById("finishButton");
 export const aiRequest = document.getElementById("aiRequest");
 
 /**
- * 
+ *
+ * instructions.html
+ *
+ */
+export const consentContainer = document.getElementById("consentContainer");
+
+/**
+ *
  * feedback.html
- * 
+ *
  */
 export const feedbackContainer = document.getElementById("feedbackContainer");
-
-
