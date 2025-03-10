@@ -46,7 +46,7 @@ export function showEnterEducationTrials() {
 
       const modalInfo = document.getElementById("modalInfo");
       modalInfo.innerHTML = `<p>
-          Now, you will play ${globalState.NUM_EDUCATION_TRIALS} rounds of trials. Please carefully read the
+          Now, you will play ${globalState.NUM_EDUCATION_TRIALS} trial rounds. Please carefully read the
           instructions and make your choices.
         </p>`;
 
@@ -83,8 +83,7 @@ export function showEnterRetryTrials() {
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
             You did not select the best answers. <br/>
-            Next, the best answers will be displayed as blue numbers.ß
-            Please try again.
+            The best answers will be shown in blue.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
