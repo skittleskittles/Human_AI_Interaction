@@ -3,8 +3,16 @@ import {
   experimentContainer,
   consentContainer,
   modalContainer,
+  infoContent,
 } from "./data/domElements";
 import { globalState } from "./data/variable";
+import {
+  clearCanvas,
+  drawGameCircle,
+  drawObjects,
+  drawPlayer,
+} from "./logic/drawing";
+import { initializeObjects, initializePlayer } from "./logic/initialize";
 
 export function showConsent() {
   fetch("consent.html")
@@ -52,6 +60,20 @@ export function showEnterEducationTrials() {
       // Close modal when clicking the "OK" button
       closeModal.addEventListener("click", () => {
         modal.style.display = "none";
+        if (globalState.needRetry) {
+          globalState.canShowAnswer = true;
+          initializeObjects(globalState.isEasyMode, globalState.needRetry);
+          initializePlayer();
+          clearCanvas();
+          drawGameCircle();
+          drawObjects();
+          drawPlayer();
+          infoContent.innerHTML = `<p>
+            You did not select the best answers. <br/>
+            The best answers are displayed as blue numbers. <br/>
+            Please carefully try again in the next sequence.
+          </p>`;
+        }
       });
     });
 }
@@ -60,8 +82,9 @@ export function showEnterRetryTrials() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            You did not select the best answer. 
-            Please carefully watch the animation, read the instructions, and try again.
+            You did not select the best answers. <br/>
+            Next, the best answers will be displayed as blue numbers.ß
+            Please try again.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }

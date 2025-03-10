@@ -134,7 +134,7 @@ export function drawObjects() {
         );
       }
 
-      if (globalState.canshowRequestAI) {
+      if (globalState.canShowRequestAI || globalState.canShowAnswer) {
         let AISelectionIndex = globalState.bestSolution.sequence.indexOf(index);
         if (AISelectionIndex !== -1) {
           ctx.fillStyle = "blue";

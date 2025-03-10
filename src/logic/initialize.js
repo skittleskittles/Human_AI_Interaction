@@ -28,18 +28,16 @@ export function initializeObjects(isEasyMode, needRetry) {
       globalState.centerX - (offset - specialSpeed * OBSERVATION_FRAMES)
     );
 
-    // 1️⃣ **Create two special objects (Left & Right, moving toward the center)**
+    // Create two special objects (Left & Right, moving toward the center)
     if (isEasyMode) {
       createSpecialObjects(specialSpeed, offset);
     }
 
-    // 2️⃣ **Create remaining random objects (far from the center, low value)**
+    // Create remaining random objects (far from the center, low value)
     for (let i = isEasyMode ? 2 : 0; i < numObjects; i++) {
       let newObject = generateRandomObject(isEasyMode, specialFinalRadius);
       globalState.objects.push(newObject);
     }
-
-    globalState.lastRoundObjects = structuredClone(globalState.objects);
   }
 }
 
@@ -88,6 +86,8 @@ function createSpecialObjects(specialSpeed, offset) {
     globalState.objects.push({
       x0,
       y0,
+      x: x0,
+      y: y0,
       radius: 15,
       speed: specialSpeed,
       dX,
@@ -141,6 +141,8 @@ function generateRandomObject(isEasyMode, specialFinalRadius) {
   return {
     x0,
     y0,
+    x: x0,
+    y: y0,
     radius: 15,
     speed,
     dX: dx,
