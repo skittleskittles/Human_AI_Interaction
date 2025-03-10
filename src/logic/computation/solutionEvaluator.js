@@ -85,10 +85,10 @@ export function enumerateAllSolutions() {
     let moves = [];
     let isInProgress = true; // Interception is still active
 
+    // console.log("===", sequence[0], ",", sequence[1], "===");
     for (let j = 0; j < globalState.NUM_SELECTIONS; j++) {
       const id = sequence[j];
       const objectNow = copyObjects[id];
-
       let [
         success,
         timeToIntercept,
@@ -124,10 +124,20 @@ export function enumerateAllSolutions() {
         objectNow,
         success,
         finalDistanceAtCircle,
-        j,
-        isInProgress
+        j
       );
-
+      // console.log(
+      //   "id:",
+      //   id,
+      //   "valueNow:",
+      //   valueNow,
+      //   "objectScore:",
+      //   objectNow.value,
+      //   "success:",
+      //   success,
+      //   "finalDistanceAtCircle:",
+      //   finalDistanceAtCircle
+      // );
       totalValue += valueNow;
 
       // If interception fails, mark as not in progress
@@ -207,8 +217,7 @@ function computeObjectValue(
   object,
   success,
   finalDistanceAtCircle,
-  selectionIndex,
-  isInProgress
+  selectionIndex
 ) {
   if (success) return object.value;
 
@@ -219,7 +228,7 @@ function computeObjectValue(
     object.value *
     weight;
 
-  return isInProgress ? scaledValue : 0; // If no longer in progress, weight is applied
+  return scaledValue;
 }
 
 /**
@@ -269,7 +278,7 @@ function logSolutions(solutions) {
   solutions.forEach((sol, i) => {
     console.log(
       `${i}: Sequence ${sol.sequence}, Score: ${sol.totalValue.toFixed(
-        2
+        3
       )}, Rank:${sol.rank}, Intercepted Cnt:${sol.interceptedCnt}`
     );
     // sol.moves.forEach((move, index) => {
@@ -280,6 +289,6 @@ function logSolutions(solutions) {
   console.log(
     `\n🏆 Best solution = ${
       solutions[0].sequence
-    }, maxValue = ${maxValue.toFixed(2)}`
+    }, maxValue = ${maxValue.toFixed(3)}`
   );
 }

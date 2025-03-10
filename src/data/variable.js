@@ -43,7 +43,8 @@ export const globalState = {
   interceptionCounter: 0,
   interceptionFrame: 0,
 
-  canshowRequestAI: false,
+  canShowRequestAI: false,
+  canShowAnswer: false,
 };
 
 /*

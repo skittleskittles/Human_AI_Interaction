@@ -16,18 +16,26 @@ export function attemptIntercept(
   let interceptPosX = NaN,
     interceptPosY = NaN;
   // let totalDistanceTraveled = Infinity;
-  let finalDistanceAtCircle, timeToCircle, circleBoundaryX, circleBoundaryY;
+  let timeToCircle, circleBoundaryX, circleBoundaryY, finalDistanceAtCircle;
 
   // If interception is already over, compute final distance at the circle boundary
   if (!isInProgress) {
-    return computeNoInterceptCase(
-      playerPosX,
-      playerPosY,
-      objectPosX,
-      objectPosY,
-      objectVelX,
-      objectVelY
-    );
+    [timeToCircle, circleBoundaryX, circleBoundaryY, finalDistanceAtCircle] =
+      computeNoInterceptCase(
+        playerPosX,
+        playerPosY,
+        objectPosX,
+        objectPosY,
+        objectVelX,
+        objectVelY
+      );
+    return [
+      success,
+      timeToCircle,
+      circleBoundaryX,
+      circleBoundaryY,
+      finalDistanceAtCircle,
+    ];
   }
 
   // Compute interception time using quadratic formula
@@ -41,28 +49,44 @@ export function attemptIntercept(
 
   // If no valid interception time exists, handle failure case
   if (!hasSolution) {
-    return computeNoInterceptCase(
-      playerPosX,
-      playerPosY,
-      objectPosX,
-      objectPosY,
-      objectVelX,
-      objectVelY
-    );
+    [timeToCircle, circleBoundaryX, circleBoundaryY, finalDistanceAtCircle] =
+      computeNoInterceptCase(
+        playerPosX,
+        playerPosY,
+        objectPosX,
+        objectPosY,
+        objectVelX,
+        objectVelY
+      );
+    return [
+      success,
+      timeToCircle,
+      circleBoundaryX,
+      circleBoundaryY,
+      finalDistanceAtCircle,
+    ];
   }
 
   // Select the smallest valid interception time
   travelTime = t1 >= 0 && (t1 < t2 || t2 < 0) ? t1 : t2 >= 0 ? t2 : Infinity;
 
   if (travelTime === Infinity) {
-    return computeNoInterceptCase(
-      playerPosX,
-      playerPosY,
-      objectPosX,
-      objectPosY,
-      objectVelX,
-      objectVelY
-    );
+    [timeToCircle, circleBoundaryX, circleBoundaryY, finalDistanceAtCircle] =
+      computeNoInterceptCase(
+        playerPosX,
+        playerPosY,
+        objectPosX,
+        objectPosY,
+        objectVelX,
+        objectVelY
+      );
+    return [
+      success,
+      timeToCircle,
+      circleBoundaryX,
+      circleBoundaryY,
+      finalDistanceAtCircle,
+    ];
   }
 
   // Compute interception position
@@ -71,7 +95,7 @@ export function attemptIntercept(
   // totalDistanceTraveled = travelTime * playerSpeed;
 
   // Compute final distance at the circle boundary
-  [finalDistanceAtCircle, timeToCircle, circleBoundaryX, circleBoundaryY] =
+  [timeToCircle, circleBoundaryX, circleBoundaryY, finalDistanceAtCircle] =
     computeFinalDistanceAtCircleBoundary(
       playerPosX,
       playerPosY,
@@ -177,10 +201,10 @@ function computeFinalDistanceAtCircleBoundary(
   );
 
   return [
-    finalDistanceAtCircle,
     timeToCircle,
     circleBoundaryX,
     circleBoundaryY,
+    finalDistanceAtCircle,
   ];
 }
 

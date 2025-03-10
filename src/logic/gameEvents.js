@@ -28,6 +28,7 @@ export function startTrail() {
   } else {
     globalState.curTrial++;
   }
+  globalState.canShowAnswer = false;
 
   console.log(`------curTrail: ${globalState.curTrial}---------`);
 
@@ -39,7 +40,7 @@ export function startTrail() {
   // Update the info div
   infoContent.innerHTML = "<p>Example sequence in progress...</p>";
   resultInfoContent.innerHTML = `<p>Your score: (Range: 0-100)</p><p>Your choice:</p>`;
-  globalState.canshowRequestAI = false;
+  globalState.canShowRequestAI = false;
 
   // Initialize the objects and the player positions, direction and speed
   initializeObjects(globalState.isEasyMode, globalState.needRetry);
@@ -89,7 +90,7 @@ export function startInterceptionSequence() {
   globalState.interceptionFrame = 0;
 
   infoContent.innerHTML = "<p>Interception sequence in progress...</p>";
-  globalState.canshowRequestAI = false;
+  globalState.canShowRequestAI = false;
 
   // Start the interception animation
   globalState.animationFrameId = requestAnimationFrame(animateInterception);
@@ -123,8 +124,11 @@ export function endDemo() {
   }
 
   if (globalState.AI_HELP == 1) {
-    globalState.canshowRequestAI = true;
+    globalState.canShowRequestAI = true;
   }
+
+  // save object position
+  globalState.lastRoundObjects = structuredClone(globalState.objects);
 
   clearCanvas();
   drawGameCircle();
@@ -133,7 +137,7 @@ export function endDemo() {
 }
 
 export function replayDemo() {
-  globalState.canshowRequestAI = false;
+  globalState.canShowRequestAI = false;
   replayButton.disabled = true; // Disables the button
   //replayButton.style.display = 'none'; // Hide the button during replay
   //initializeObjects(); // Reinitialize objects for replay
@@ -144,7 +148,7 @@ export function replayDemo() {
 
 export function revealAISolution() {
   if (globalState.AI_HELP == 2) {
-    globalState.canshowRequestAI = true;
+    globalState.canShowRequestAI = true;
 
     clearCanvas();
     drawGameCircle();

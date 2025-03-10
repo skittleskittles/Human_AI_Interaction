@@ -80,14 +80,17 @@ function finishTrial() {
   let valNow = Math.round(globalState.playerSolution.totalValueProp * 100);
   let rankNow = Math.round(globalState.playerSolution.rank);
   let interceptedCnt = Math.round(globalState.playerSolution.interceptedCnt);
-  let scoreText = `<p>Your score: ${valNow} (Range: 0-100)</p><p>Your choice: ${rankNow}th best solution</p>`;
+  let scoreText = `<p>Your score: ${valNow} (Range: 0-100)</p>
+                 <p>Your choice: ${getOrdinalSuffix(
+                   rankNow
+                 )} best solution</p>`;
   if (interceptedCnt == globalState.NUM_SELECTIONS) {
     scoreText =
-      `<p>Successfully intercepts both selected objects</p>` + scoreText;
+      `<p>Successfully intercept both selected objects</p>` + scoreText;
   } else if (interceptedCnt == 1) {
-    scoreText = `<p>Misses Object 2 due to being out of range</p>` + scoreText;
+    scoreText = `<p>Miss Object 2 due to being out of range</p>` + scoreText;
   } else if (interceptedCnt == 0) {
-    scoreText = `<p>Fails to intercept either selected object</p>` + scoreText;
+    scoreText = `<p>Fail to intercept either selected object</p>` + scoreText;
   }
   resultInfoContent.innerHTML = scoreText;
 
@@ -107,13 +110,13 @@ function finishTrial() {
       }
     } else {
       // Incorrect answer selected
-      globalState.needRetry = true;
-
-      if (globalState.retryCnt < 1) {
+        if (globalState.retryCnt < 1) {
         // Allow only one retry for incorrect answers
+        globalState.needRetry = true;
         showEnterRetryTrials();
       } else {
         // Player failed even after retry → End game
+        globalState.needRetry = false;
         showEndGame();
         finishGame(false);
         // TODO: Implement game-ending logic
@@ -159,4 +162,20 @@ function updatePlayerPosition() {
   globalState.player.y += currentMove.dY;
 
   return status;
+}
+
+function getOrdinalSuffix(n) {
+  if (n >= 11 && n <= 13) {
+    return `${n}th`; // Special case for 11th, 12th, 13th
+  }
+  switch (n % 10) {
+    case 1:
+      return `${n}st`;
+    case 2:
+      return `${n}nd`;
+    case 3:
+      return `${n}rd`;
+    default:
+      return `${n}th`;
+  }
 }
