@@ -222,7 +222,7 @@ function computeObjectValue(
   if (success) return object.value;
 
   // Apply weight-based scoring for missed interceptions
-  let weight = 0.5 * (globalState.NUM_SELECTIONS - selectionIndex);
+  let weight = selectionIndex == 0 ? 0.75 : 0.25;
   let scaledValue =
     ((GAME_RADIUS * 2 - finalDistanceAtCircle) / (GAME_RADIUS * 2)) *
     object.value *

@@ -75,7 +75,7 @@ function finishTrial() {
     startButton.style.display = "block";
   }
 
-  infoContent.innerHTML = `<p>Finished interception sequence</p>`;
+  infoContent.innerHTML = `<p>Interception Complete</p>`;
 
   let valNow = Math.round(globalState.playerSolution.totalValueProp * 100);
   let rankNow = Math.round(globalState.playerSolution.rank);
@@ -88,7 +88,7 @@ function finishTrial() {
     scoreText =
       `<p>Successfully intercept both selected objects</p>` + scoreText;
   } else if (interceptedCnt == 1) {
-    scoreText = `<p>Miss Object 2 due to being out of range</p>` + scoreText;
+    scoreText = `<p>Miss Object 2: out of range</p>` + scoreText;
   } else if (interceptedCnt == 0) {
     scoreText = `<p>Fail to intercept either selected object</p>` + scoreText;
   }
@@ -110,7 +110,7 @@ function finishTrial() {
       }
     } else {
       // Incorrect answer selected
-        if (globalState.retryCnt < 1) {
+      if (globalState.retryCnt < 1) {
         // Allow only one retry for incorrect answers
         globalState.needRetry = true;
         showEnterRetryTrials();
