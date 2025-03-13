@@ -164,8 +164,8 @@ export function drawPlayer() {
   // Draw the player image
   if (playerImage.complete && playerImage.naturalWidth !== 0) {
     // Ensure the image is loaded before drawing
-    const imageWidth = 60; // Adjust the size of the image
-    const imageHeight = 60;
+    const imageWidth = 50; // Adjust the size of the image
+    const imageHeight = 50;
     ctx.drawImage(
       playerImage,
       globalState.player.x - imageWidth / 2,

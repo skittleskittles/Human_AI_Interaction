@@ -38,7 +38,8 @@ export function startTrail() {
   aiRequest.disabled = true;
 
   // Update the info div
-  infoContent.innerHTML = "<p>Example sequence in progress...</p>";
+  infoContent.innerHTML =
+    "<p>Please observe object values and movements carefully.</p>";
   resultInfoContent.innerHTML = `<p>Your score: (Range: 0-100)</p><p>Your choice:</p>`;
   globalState.canShowRequestAI = false;
 
@@ -98,10 +99,16 @@ export function startInterceptionSequence() {
 
 export function endDemo() {
   cancelAnimationFrame(globalState.animationFrameId);
-  infoContent.innerHTML = `<p><center>OR</center></p><p>Click on ${globalState.NUM_SELECTIONS} objects to set the interception order.</p><p>Maximize scores by intercepting objects.</p>`;
-  if (globalState.AI_HELP == 1) {
-    infoContent.innerHTML += `<p>The suggested AI solution is shown in blue </p>`;
+  let educationInfo =
+    `<p><center>OR</center></p><p>Click on ${globalState.NUM_SELECTIONS} objects to set the interception order.</p>` +
+    `<p>Maximize scores by intercepting objects.</p>`;
+  if (globalState.isEasyMode) {
+    educationInfo += `<p>Earn partial score for missed interceptions based on how close you are to the missed objects and their values.</p>`;
   }
+  if (globalState.AI_HELP == 1) {
+    educationInfo += `<p>The suggested AI solution is shown in blue </p>`;
+  }
+  infoContent.innerHTML = educationInfo;
   canvas.addEventListener("click", handleObjectSelection);
   canvas.addEventListener("mousemove", handleMouseHover);
 

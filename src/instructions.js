@@ -84,6 +84,8 @@ export function showEnterRetryTrials() {
   modalInfo.innerHTML = `<p>
             You did not select the best answers. <br/>
             The best answers will be shown in blue.
+            Please try again.<br/>
+            Note: Your can earn partial score for missed interceptions.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
