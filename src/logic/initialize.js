@@ -23,9 +23,9 @@ export function initializeObjects(isEasyMode, needRetry) {
     const numObjects = globalState.NUM_OBJECTS;
     const specialSpeed =
       ((MAX_SPEED - MIN_SPEED) * speedMultiplier) / refreshRate;
-    const offset = GAME_RADIUS - GAME_RADIUS / 5; // Position special objects near the edge
+    const offset = GAME_RADIUS - GAME_RADIUS / 3; // Position special objects near the edge
     const specialFinalRadius = Math.abs(
-      globalState.centerX - (offset - specialSpeed * OBSERVATION_FRAMES)
+      offset - specialSpeed * OBSERVATION_FRAMES
     );
 
     // Create two special objects (Left & Right, moving toward the center)
@@ -50,13 +50,13 @@ function createSpecialObjects(specialSpeed, offset) {
       x0: globalState.centerX - offset,
       dX: specialSpeed,
       y0: globalState.centerY,
-      dY: 0,
+      dY: -0.5,
     },
     {
       x0: globalState.centerX + offset,
       dX: -specialSpeed,
       y0: globalState.centerY,
-      dY: 0,
+      dY: -0.5,
     },
   ];
 
@@ -131,7 +131,7 @@ function generateRandomObject(isEasyMode, specialFinalRadius) {
     );
 
     isValid = isEasyMode
-      ? finalRadius > specialFinalRadius + 50 && finalRadius < GAME_RADIUS - 50
+      ? finalRadius > specialFinalRadius + 80 && finalRadius < GAME_RADIUS - 20
       : finalRadius > 100 && finalRadius < GAME_RADIUS - 50;
   } while (!isValid);
 
