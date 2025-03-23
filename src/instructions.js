@@ -1,11 +1,11 @@
-import { startGame } from ".";
 import {
-  experimentContainer,
-  consentContainer,
+  instructionsContainer,
   modalContainer,
   infoContent,
+  experimentContainer,
 } from "./data/domElements";
 import { globalState } from "./data/variable";
+import { startGame } from ".";
 import {
   clearCanvas,
   drawGameCircle,
@@ -14,25 +14,57 @@ import {
 } from "./logic/drawing";
 import { initializeObjects, initializePlayer } from "./logic/initialize";
 
-export function showConsent() {
-  fetch("consent.html")
+export function showInstructions() {
+  fetch("instructions.html")
     .then((response) => response.text())
     .then((html) => {
-      consentContainer.innerHTML = html;
+      instructionsContainer.innerHTML = html;
+      instructionsContainer.style.display = "block";
 
-      const checkbox = document.getElementById("confirmParticipation");
-      const proceedButton = document.getElementById("proceedButton");
+      const prevButton = document.getElementById("prevInstructionBtn");
+      const nextButton = document.getElementById("nextInstructionBtn");
 
-      checkbox.addEventListener("change", function () {
-        proceedButton.disabled = !this.checked;
+      let currentPage = 1;
+      const totalPages = 8;
+
+      function showPage(pageNumber) {
+        console.log("currentPage:", currentPage, "totalPages:", totalPages);
+        for (let i = 1; i <= totalPages; i++) {
+          document
+            .getElementById("instructionPage-" + i)
+            .classList.remove("active");
+        }
+        document
+          .getElementById("instructionPage-" + pageNumber)
+          .classList.add("active");
+
+        if (pageNumber === 1) {
+          prevButton.disabled = true;
+          prevButton.hidden = true;
+        } else {
+          prevButton.disabled = false;
+          prevButton.hidden = false;
+        }
+      }
+
+      prevButton.addEventListener("click", function () {
+        if (currentPage > 1) {
+          currentPage--;
+          showPage(currentPage);
+        }
       });
 
-      proceedButton.addEventListener("click", function () {
-        consentContainer.style.display = "none";
-        experimentContainer.style.display = "block";
-        globalState.isEasyMode = true;
-        showEnterEducationTrials();
-        startGame();
+      nextButton.addEventListener("click", function () {
+        if (currentPage < totalPages) {
+          currentPage++;
+          showPage(currentPage);
+        } else {
+          instructionsContainer.style.display = "none";
+          experimentContainer.style.display = "block";
+          globalState.isEasyMode = true;
+          showEnterEducationTrials();
+          startGame();
+        }
       });
     });
 }

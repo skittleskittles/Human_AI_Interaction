@@ -42,6 +42,13 @@ module.exports = {
         test: /\.(png|jpg|gif|svg)$/,
         type: "asset/resource",
       },
+      {
+        test: /\.(mp4|mov)$/i,
+        type: "asset/resource",
+        generator: {
+          filename: "videos/[name][ext]",
+        },
+      },
     ],
   },
   optimization: {
@@ -58,8 +65,14 @@ module.exports = {
       patterns: [
         { from: "assets", to: "" },
         { from: "./pages/consent.html", to: "consent.html" },
+        { from: "./pages/instructions.html", to: "instructions.html" },
         { from: "./pages/modal.html", to: "modal.html" },
         { from: "./pages/feedback.html", to: "feedback.html" },
+        { from: "./styles/instruction.css", to: "instruction.css" },
+        { from: "./styles/instructionPage2.css", to: "instructionPage2.css" },
+        { from: "./styles/instructionPage4.css", to: "instructionPage4.css" },
+        { from: "./styles/instructionPage5.css", to: "instructionPage5.css" },
+        { from: "./styles/instructionPage7.css", to: "instructionPage7.css" },
       ],
     }),
   ],

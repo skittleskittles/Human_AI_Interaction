@@ -29,10 +29,25 @@ export const aiRequest = document.getElementById("aiRequest");
 
 /**
  *
- * instructions.html
+ * consent.html
  *
  */
 export const consentContainer = document.getElementById("consentContainer");
+
+/**
+ *
+ * instructions.html
+ *
+ */
+export const instructionsContainer = document.getElementById(
+  "instructionsContainer"
+);
+
+/**
+ *
+ * modal.html
+ *
+ */
 export const modalContainer = document.getElementById("modalContainer");
 
 /**

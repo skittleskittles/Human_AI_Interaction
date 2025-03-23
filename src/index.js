@@ -21,7 +21,7 @@ import {
   finishGame,
 } from "./logic/gameEvents";
 import { clearCanvas, drawGameCircle } from "./logic/drawing";
-import { showConsent } from "./instructions";
+import { showConsent } from "./consent";
 
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
