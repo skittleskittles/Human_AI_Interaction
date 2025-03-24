@@ -9,6 +9,7 @@ export const globalState = {
   needRetry: false,
   retryCnt: 0,
 
+  curExperiment: 0,
   curTrial: 0,
 
   isDebugMode: false,
@@ -39,12 +40,14 @@ export const globalState = {
   permutations: [],
   allSolutions: null,
   bestSolution: null,
-  playerSolution: null,
+  userSolution: null,
   interceptionCounter: 0,
   interceptionFrame: 0,
 
   canShowRequestAI: false,
-  canShowAnswer: false,
+  canShowAIAnswer: false,
+
+  demoPlayTimes: 0,
 };
 
 /*

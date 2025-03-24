@@ -39,7 +39,7 @@ export function lookupInterceptionPaths() {
     globalState.permutations,
     globalState.selectedObjects
   );
-  let playerSolution;
+  let userSolution;
 
   console.log(`Matching index: ${matchingIndex}`);
   if (matchingIndex !== -1) {
@@ -47,12 +47,12 @@ export function lookupInterceptionPaths() {
       `Matching permutation:`,
       globalState.permutations[matchingIndex]
     );
-    playerSolution = globalState.allSolutions[matchingIndex];
+    userSolution = globalState.allSolutions[matchingIndex];
   } else {
     console.log(`No matching permutation found.`);
   }
 
-  return playerSolution;
+  return userSolution;
 }
 
 function findMatchingPermutationIndex(permutations, selectedObjects) {
@@ -83,6 +83,7 @@ export function enumerateAllSolutions() {
 
     let totalValue = 0;
     let moves = [];
+    let objDetails = [];
     let isInProgress = true; // Interception is still active
 
     // console.log("===", sequence[0], ",", sequence[1], "===");
@@ -142,6 +143,15 @@ export function enumerateAllSolutions() {
 
       // If interception fails, mark as not in progress
       if (!success && isInProgress) isInProgress = false;
+
+      let objDetail = {
+        objIndex: id,
+        finalDistance: finalDistanceAtCircle,
+        isIntercepted: success,
+        finalValue: valueNow,
+        totalValue: objectNow.value,
+      };
+      objDetails.push(objDetail);
     }
 
     let totalValueProp = 0,
@@ -160,6 +170,7 @@ export function enumerateAllSolutions() {
       rank,
       interceptedCnt,
       totalValueProp,
+      objDetails,
     };
     allSolutions.push(solution);
   }

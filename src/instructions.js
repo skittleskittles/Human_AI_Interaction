@@ -6,12 +6,7 @@ import {
 } from "./data/domElements";
 import { globalState } from "./data/variable";
 import { startGame } from ".";
-import {
-  clearCanvas,
-  drawGameCircle,
-  drawObjects,
-  drawPlayer,
-} from "./logic/drawing";
+import { redrawAll } from "./logic/drawing";
 import { initializeObjects, initializePlayer } from "./logic/initialize";
 
 export function showInstructions() {
@@ -28,7 +23,6 @@ export function showInstructions() {
       const totalPages = 8;
 
       function showPage(pageNumber) {
-        console.log("currentPage:", currentPage, "totalPages:", totalPages);
         for (let i = 1; i <= totalPages; i++) {
           document
             .getElementById("instructionPage-" + i)
@@ -93,13 +87,10 @@ export function showEnterEducationTrials() {
       closeModal.addEventListener("click", () => {
         modal.style.display = "none";
         if (globalState.needRetry) {
-          globalState.canShowAnswer = true;
+          globalState.canShowAIAnswer = true;
           initializeObjects(globalState.isEasyMode, globalState.needRetry);
           initializePlayer();
-          clearCanvas();
-          drawGameCircle();
-          drawObjects();
-          drawPlayer();
+          redrawAll();
           infoContent.innerHTML = `<p>
             You did not select the best answers. <br/>
             The best answers are displayed as blue numbers. <br/>

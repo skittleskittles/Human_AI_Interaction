@@ -1,5 +1,8 @@
 import { feedbackContainer } from "./data/domElements";
 import { globalState } from "./data/variable";
+import { User } from "./logic/collectData";
+import { getCurrentDate } from "./utils/utils";
+import { saveFeedbackData } from "./firebase/dataProcessor";
 
 export function showFeedback() {
   // Fetch and insert feedback form dynamically
@@ -53,23 +56,31 @@ export function showFeedback() {
     });
 }
 
-function submit(freeResponse, submitButton, thankYouMessage) {
-  let freeResponseText = freeResponse.value.trim();
+async function submit(freeResponse, submitButton, thankYouMessage) {
+  const now = getCurrentDate();
 
+  let freeResponseText = freeResponse.value.trim();
   let feedbackData = {
     choices: {},
     freeResponse: freeResponseText,
+    submittedAt: now,
   };
+
+  // Update local user end_time
+  User.end_time = now;
 
   let radioGroups = document.querySelectorAll("input[type='radio']:checked");
   radioGroups.forEach((radio) => {
     feedbackData.choices[radio.name] = radio.value;
   });
 
-  console.log("📌 User Feedback:", feedbackData);
-
   submitButton.disabled = true;
   thankYouMessage.style.display = "block";
+
+  console.log("📌 User Feedback:", feedbackData);
+
+  // Save feedback data
+  await saveFeedbackData(feedbackData);
 
   // todo: redirect to prolific
 }
