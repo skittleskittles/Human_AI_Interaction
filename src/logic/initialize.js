@@ -10,6 +10,8 @@ import {
 } from "../data/constant.js";
 import { globalState } from "../data/variable.js";
 import { sampleBeta } from "../utils/utils.js";
+import educate1Objects from "../data/educate1_objects.json";
+import educate2Objects from "../data/educate2_objects.json";
 
 export function initializeObjects(isEasyMode, needRetry) {
   globalState.selectedObjects = []; // Reset selections
@@ -28,13 +30,18 @@ export function initializeObjects(isEasyMode, needRetry) {
       offset - specialSpeed * OBSERVATION_FRAMES
     );
 
-    // Create two special objects (Left & Right, moving toward the center)
+    // Create objects for easy mode
     if (isEasyMode) {
-      createSpecialObjects(specialSpeed, offset);
+      if (globalState.curTrial == 1) {
+        globalState.objects = educate1Objects;
+      } else {
+        globalState.objects = educate2Objects;
+      }
+      return;
     }
 
-    // Create remaining random objects (far from the center, low value)
-    for (let i = isEasyMode ? 2 : 0; i < numObjects; i++) {
+    // Create random objects
+    for (let i = 0; i < numObjects; i++) {
       let newObject = generateRandomObject(isEasyMode, specialFinalRadius);
       globalState.objects.push(newObject);
     }
@@ -45,7 +52,7 @@ export function initializeObjects(isEasyMode, needRetry) {
  * Creates two special objects that move toward the center.
  */
 function createSpecialObjects(specialSpeed, offset) {
-  const specialObjectsX = [
+  const specialObjects = [
     {
       x0: globalState.centerX - offset,
       dX: specialSpeed,
@@ -60,28 +67,11 @@ function createSpecialObjects(specialSpeed, offset) {
     },
   ];
 
-  const specialObjectsY = [
-    {
-      x0: globalState.centerX,
-      dX: 0,
-      y0: globalState.centerY - offset,
-      dY: specialSpeed,
-    },
-    {
-      x0: globalState.centerX,
-      dX: 0,
-      y0: globalState.centerY + offset,
-      dY: -specialSpeed,
-    },
-  ];
-
   for (let i = 0; i < 2; i++) {
-    let x0, y0, dX, dY;
-    if (globalState.curTrial == 1) {
-      ({ x0, y0, dX, dY } = specialObjectsX[i]);
-    } else {
-      ({ x0, y0, dX, dY } = specialObjectsY[i]);
-    }
+    let x0,
+      y0,
+      dX,
+      dY = specialObjects[i];
 
     globalState.objects.push({
       x0,

@@ -7,6 +7,7 @@ import {
   interceptionButton,
   aiRequest,
   finishButton,
+  experimentContainer,
 } from "./data/domElements";
 import { randSeed } from "./data/constant";
 import { globalState } from "./data/variable";
@@ -22,6 +23,7 @@ import {
 } from "./logic/gameEvents";
 import { clearCanvas, drawGameCircle } from "./logic/drawing";
 import { showConsent } from "./consent";
+import { showEnterEducationTrials } from "./instructions";
 
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
@@ -89,6 +91,10 @@ function initGame(seed) {
 --------------------------------------------------------------------------------------
 */
 showConsent();
+// experimentContainer.style.display = "block";
+// globalState.isEasyMode = true;
+// showEnterEducationTrials();
+// startGame();
 
 /*
 --------------------------------------------------------------------------------------
