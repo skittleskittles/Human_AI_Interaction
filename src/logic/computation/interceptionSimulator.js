@@ -246,14 +246,12 @@ function computePlayerDistanceToCircleBoundary(
   );
 
   if (!hasSolution) {
-    console.warn("🚨 Player's movement does not reach the circle boundary.");
     return [Infinity, NaN, NaN];
   }
 
   let timeToCircle =
     t1 >= 0 && (t1 < t2 || t2 < 0) ? t1 : t2 >= 0 ? t2 : Infinity;
   if (timeToCircle === Infinity) {
-    console.warn("🚨 Player is moving away from the circle.");
     return [Infinity, NaN, NaN];
   }
 
