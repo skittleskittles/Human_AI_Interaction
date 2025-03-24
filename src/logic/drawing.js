@@ -3,7 +3,7 @@ import { globalState } from "../data/variable.js";
 import { canvas, ctx } from "../data/domElements.js";
 
 // Function to draw arrows indicating direction and speed
-export function drawArrows() {
+function drawArrows() {
   globalState.objects.forEach((object) => {
     if (!object.isIntercepted) {
       const arrowLength =
@@ -45,7 +45,7 @@ export function drawArrows() {
   });
 }
 
-export function drawPlayerArrow() {
+function drawPlayerArrow() {
   // Draw the player arrow
   const arrowLength =
     Math.sqrt(globalState.player.dX ** 2 + globalState.player.dY ** 2) *
@@ -134,7 +134,7 @@ export function drawObjects() {
         );
       }
 
-      if (globalState.canShowRequestAI || globalState.canShowAnswer) {
+      if (globalState.canShowRequestAI || globalState.canShowAIAnswer) {
         let AISelectionIndex = globalState.bestSolution.sequence.indexOf(index);
         if (AISelectionIndex !== -1) {
           ctx.fillStyle = "blue";
@@ -160,7 +160,7 @@ export function drawObjects() {
   drawArrows();
 }
 
-export function drawPlayer() {
+function drawPlayer() {
   // Draw the player image
   if (playerImage.complete && playerImage.naturalWidth !== 0) {
     // Ensure the image is loaded before drawing
@@ -192,9 +192,9 @@ export function drawPlayer() {
 
   // Visualize interception position (for debugging)
   if (!true) {
-    if (globalState.playerSolution) {
+    if (globalState.userSolution) {
       let currentMove =
-        globalState.playerSolution.moves[globalState.interceptionCounter]; // object that contains all information for intercepting the current object
+        globalState.userSolution.moves[globalState.interceptionCounter]; // object that contains all information for intercepting the current object
       ctx.beginPath();
       ctx.arc(
         currentMove.interceptPosX,
@@ -245,4 +245,11 @@ export function drawGameCircle() {
 export function clearCanvas() {
   ctx.restore(); // Restore to the original canvas state
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+export function redrawAll() {
+  clearCanvas();
+  drawGameCircle();
+  drawObjects();
+  drawPlayer();
 }

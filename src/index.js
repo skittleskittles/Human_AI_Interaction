@@ -11,13 +11,18 @@ import {
 } from "./data/domElements";
 import { randSeed } from "./data/constant";
 import { globalState } from "./data/variable";
-import { User } from "./data/model";
-import { getUrlParameters, lcg, generateUID } from "./utils/utils";
+import { User } from "./logic/collectData";
+import {
+  getUrlParameters,
+  lcg,
+  generateUID,
+  getCurrentDate,
+} from "./utils/utils";
 import { generatePermutations } from "./logic/computation/solutionEvaluator";
 import {
-  startTrail,
+  startTrial,
   reselectObjects,
-  startInterceptionSequence,
+  startInterception,
   revealAISolution,
   finishGame,
 } from "./logic/gameEvents";
@@ -86,10 +91,11 @@ function initGame(seed) {
 /*
 --------------------------------------------------------------------------------------
 
-    Instructions
+    Start the Experiment
 
 --------------------------------------------------------------------------------------
 */
+User.create_time = getCurrentDate();
 showConsent();
 // experimentContainer.style.display = "block";
 // globalState.isEasyMode = true;
@@ -109,9 +115,9 @@ export function startGame() {
   initGame(randSeed); // Replace 12345 with any desired seed
 
   // Add event listeners to buttons
-  startButton.addEventListener("click", startTrail);
+  startButton.addEventListener("click", startTrial);
   reselectButton.addEventListener("click", reselectObjects);
-  interceptionButton.addEventListener("click", startInterceptionSequence);
+  interceptionButton.addEventListener("click", startInterception);
   aiRequest.addEventListener("click", revealAISolution);
   finishButton.addEventListener("click", () => {
     finishGame(true);

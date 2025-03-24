@@ -9,114 +9,178 @@ import {
   infoContent,
   experimentContainer,
   resultInfoContent,
+  finishButton,
 } from "../data/domElements.js";
 import {
-  clearCanvas,
-  drawGameCircle,
-  drawObjects,
-  drawPlayer,
-} from "./drawing.js";
+  showEndGame,
+  showEnterMainGame,
+  showEnterRetryTrials,
+} from "../instructions.js";
+import { redrawAll } from "./drawing.js";
 import { animateObjects, animateInterception } from "./animation.js";
 import { initializeObjects, initializePlayer } from "./initialize.js";
 import { handleObjectSelection, handleMouseHover } from "./mouseEvents.js";
 import { lookupInterceptionPaths } from "./computation/solutionEvaluator.js";
 import { showFeedback } from "../feedback.js";
+import { startTimer, stopTimer, getTimerValue } from "./timeTracker.js";
+import {
+  getCurrentTrialData,
+  updateTrialDataEnd,
+  User,
+} from "./collectData.js";
+import {
+  createNewExperimentData,
+  createNewTrialData,
+  addToCustomCount,
+  recordUserChoiceData,
+} from "./collectData.js";
+import { getOrdinalSuffix, getCurrentDate } from "../utils/utils.js";
 
-export function startTrail() {
+/*
+--------------------------------------------------------------------------------------
+
+    Start the trail
+
+--------------------------------------------------------------------------------------
+*/
+export function startTrial() {
+  finalizePreviousTrial();
+  prepareNewTrial();
+
+  console.log(`------curTrial: ${globalState.curTrial}---------`);
+
+  if (!globalState.isEasyMode) {
+    initializeTrialData();
+  }
+
+  prepareUIForTrial();
+  initializeGameState();
+  startTrialAnimation();
+}
+
+function finalizePreviousTrial() {
+  const lastTrial = getCurrentTrialData();
+  if (lastTrial && !globalState.isEasyMode) {
+    const trialSec = getTimerValue("trial");
+    addToCustomCount(
+      lastTrial.total_time,
+      trialSec,
+      globalState.canShowAIAnswer
+    );
+    updateTrialDataEnd(
+      lastTrial,
+      globalState.userSolution,
+      globalState.bestSolution
+    );
+    console.log("total time: ", trialSec);
+  }
+
+  stopTimer("trial");
+}
+
+function prepareNewTrial() {
   if (globalState.needRetry) {
     globalState.retryCnt++;
   } else {
     globalState.curTrial++;
   }
-  globalState.canShowAnswer = false;
+  globalState.canShowAIAnswer = false;
+  globalState.canShowRequestAI = false;
+  globalState.demoPlayTimes = 0;
 
-  console.log(`------curTrail: ${globalState.curTrial}---------`);
+  startTimer("trial");
+}
 
-  // Hide the start round button
+export function initializeExperimentData() {
+  const newExperiment = createNewExperimentData(
+    globalState.curExperiment,
+    globalState.NUM_MAIN_TRIALS
+  );
+  User.experiments.push(newExperiment);
+}
+
+function initializeTrialData() {
+  if (User.experiments.length === 0) {
+    // Initialize experiment if it doesn't exist
+    initializeExperimentData();
+  }
+
+  // Push new trial to the current experiment
+  const newTrial = createNewTrialData(globalState.curTrial);
+  User.experiments[globalState.curExperiment].trials.push(newTrial);
+}
+
+function prepareUIForTrial() {
   startButton.style.display = "none";
   startButton.blur();
   aiRequest.disabled = true;
 
-  // Update the info div
   infoContent.innerHTML =
     "<p>Please observe object values and movements carefully.</p>";
   resultInfoContent.innerHTML = ``;
-  globalState.canShowRequestAI = false;
+}
 
-  // Initialize the objects and the player positions, direction and speed
+function initializeGameState() {
   initializeObjects(globalState.isEasyMode, globalState.needRetry);
   initializePlayer();
-
-  // Reset frame counter for the demo
   globalState.totalFrames = 0;
+}
 
-  // Start the animation
+function startTrialAnimation() {
   globalState.animationFrameId = requestAnimationFrame(animateObjects);
 }
 
-export function reselectObjects() {
-  for (let index of globalState.selectedObjects) {
-    let object = globalState.objects.find((obj) => obj.index === index);
-    if (object) {
-      object.isSelected = false;
-      delete object.selectionIndex;
-    }
-  }
+/*
+--------------------------------------------------------------------------------------
 
-  globalState.hoverObjectIndex = -1;
-  globalState.selectedObjects = [];
+    End Demo
 
-  canvas.addEventListener("click", handleObjectSelection);
-  canvas.addEventListener("mousemove", handleMouseHover);
-
-  clearCanvas();
-  drawGameCircle();
-  drawObjects();
-  drawPlayer();
-
-  interceptionButton.style.display = "none";
-  reselectButton.disabled = true;
-  replayButton.disabled = false;
-}
-
-export function startInterceptionSequence() {
-  reselectButton.style.display = "none";
-  interceptionButton.style.display = "none"; // Hide the interception button
-  replayButton.style.display = "none";
-  aiRequest.style.display = "none";
-  //aiRequest.disabled = true; // Disables the button
-
-  globalState.playerSolution = lookupInterceptionPaths();
-  globalState.interceptionCounter = 0; // the index of the interception path
-  globalState.interceptionFrame = 0;
-
-  infoContent.innerHTML = "<p>Interception sequence in progress...</p>";
-  globalState.canShowRequestAI = false;
-
-  // Start the interception animation
-  globalState.animationFrameId = requestAnimationFrame(animateInterception);
-}
-
+--------------------------------------------------------------------------------------
+*/
 export function endDemo() {
   cancelAnimationFrame(globalState.animationFrameId);
-  let educationInfo =
-    `<p><center>OR</center></p><p>Click on ${globalState.NUM_SELECTIONS} objects to set the interception order.</p>` +
-    `<p>Maximize scores by intercepting objects.</p>`;
+
+  updateInfoPanel();
+  showReplayButton();
+  loadBestSolutions();
+  updateAIRequestState();
+
+  globalState.lastRoundObjects = structuredClone(globalState.objects); // Save object state for retry
+  globalState.demoPlayTimes++;
+
+  startThinkTimerIfFirstDemo();
+
+  redrawAll();
+}
+
+function updateInfoPanel() {
+  let educationInfo = `
+    <p><center>OR</center></p>
+    <p>Click on ${globalState.NUM_SELECTIONS} objects to set the interception order.</p>
+    <p>Maximize scores by intercepting objects.</p>
+  `;
+
   if (globalState.isEasyMode) {
     educationInfo += `<p>Scores are awarded based on how close you are to the selected objects and their values.</p>`;
   }
-  if (globalState.AI_HELP == 1) {
-    educationInfo += `<p>The suggested AI solution is shown in blue </p>`;
+
+  if (globalState.AI_HELP === 1) {
+    educationInfo += `<p>The suggested AI solution is shown in blue</p>`;
   }
+
   infoContent.innerHTML = educationInfo;
+
   canvas.addEventListener("click", handleObjectSelection);
   canvas.addEventListener("mousemove", handleMouseHover);
+}
 
-  // Show the replay button
-  replayButton.disabled = false; // enables the button
+function showReplayButton() {
+  replayButton.disabled = false;
   replayButton.style.display = "block";
   replayButton.addEventListener("click", replayDemo);
+}
 
+function loadBestSolutions() {
   import("./computation/solutionEvaluator.js")
     .then((module) => module.enumerateAllSolutions())
     .then(([allSolutions, bestSolution]) => {
@@ -124,25 +188,32 @@ export function endDemo() {
       globalState.bestSolution = bestSolution;
     })
     .catch((error) => console.error("Error loading solutions:", error));
+}
 
-  if (globalState.AI_HELP == 2) {
+function updateAIRequestState() {
+  if (globalState.AI_HELP === 2) {
     aiRequest.style.display = "block";
     aiRequest.disabled = false;
   }
 
-  if (globalState.AI_HELP == 1) {
+  if (globalState.AI_HELP === 1) {
     globalState.canShowRequestAI = true;
   }
-
-  // save object position
-  globalState.lastRoundObjects = structuredClone(globalState.objects);
-
-  clearCanvas();
-  drawGameCircle();
-  drawObjects();
-  drawPlayer();
 }
 
+function startThinkTimerIfFirstDemo() {
+  if (globalState.demoPlayTimes === 1) {
+    startTimer("think");
+  }
+}
+
+/*
+--------------------------------------------------------------------------------------
+
+    Replay Demo
+
+--------------------------------------------------------------------------------------
+*/
 export function replayDemo() {
   globalState.canShowRequestAI = false;
   replayButton.disabled = true; // Disables the button
@@ -151,16 +222,216 @@ export function replayDemo() {
   //initializePlayer();  // Reinitialize player for replay
   globalState.totalFrames = 0; // Reset frame counter
   globalState.animationFrameId = requestAnimationFrame(animateObjects);
+
+  // record replay num
+  if (!globalState.isEasyMode) {
+    const currentTrial = getCurrentTrialData();
+    addToCustomCount(currentTrial.replay_num, 1, globalState.canShowAIAnswer);
+  }
 }
 
+/*
+--------------------------------------------------------------------------------------
+
+    Reselect Objects
+
+--------------------------------------------------------------------------------------
+*/
+export function reselectObjects() {
+  resetSelections();
+  enableInteraction();
+  restoreReplayUI();
+
+  // record reselect num
+  if (!globalState.isEasyMode) {
+    const currentTrial = getCurrentTrialData();
+    addToCustomCount(currentTrial.reselect_num, 1, globalState.canShowAIAnswer);
+  }
+}
+
+function resetSelections() {
+  for (let index of globalState.selectedObjects) {
+    const object = globalState.objects.find((obj) => obj.index === index);
+    if (object) {
+      object.isSelected = false;
+      delete object.selectionIndex;
+    }
+  }
+
+  globalState.selectedObjects = [];
+  globalState.hoverObjectIndex = -1;
+}
+
+function enableInteraction() {
+  canvas.addEventListener("click", handleObjectSelection);
+  canvas.addEventListener("mousemove", handleMouseHover);
+
+  redrawAll();
+}
+
+function restoreReplayUI() {
+  interceptionButton.style.display = "none";
+  reselectButton.disabled = true;
+  replayButton.disabled = false;
+}
+
+/*
+--------------------------------------------------------------------------------------
+
+    Start Interception
+
+--------------------------------------------------------------------------------------
+*/
+export function startInterception() {
+  hideInterceptionControls();
+  computeUserSolution();
+  resetInterceptionState();
+  updateInterceptionInfo();
+  startInterceptionAnimation();
+
+  if (!globalState.isEasyMode) {
+    recordTrialDataStartIntercept();
+  }
+
+  stopTimer("think");
+}
+
+function hideInterceptionControls() {
+  reselectButton.style.display = "none";
+  interceptionButton.style.display = "none";
+  replayButton.style.display = "none";
+  aiRequest.style.display = "none";
+}
+
+function computeUserSolution() {
+  globalState.userSolution = lookupInterceptionPaths();
+}
+
+function resetInterceptionState() {
+  globalState.interceptionCounter = 0;
+  globalState.interceptionFrame = 0;
+}
+
+function updateInterceptionInfo() {
+  infoContent.innerHTML = "<p>Interception sequence in progress...</p>";
+  globalState.canShowRequestAI = false;
+}
+
+function startInterceptionAnimation() {
+  globalState.animationFrameId = requestAnimationFrame(animateInterception);
+}
+
+function recordTrialDataStartIntercept() {
+  const currentTrial = getCurrentTrialData();
+  recordUserChoiceData(currentTrial, globalState.userSolution);
+
+  const thinkTimeSec = getTimerValue("think");
+  addToCustomCount(
+    currentTrial.think_time,
+    thinkTimeSec,
+    globalState.canShowAIAnswer
+  );
+  console.log("think time: ", thinkTimeSec);
+}
+
+/*
+--------------------------------------------------------------------------------------
+
+    Finish the interception
+
+--------------------------------------------------------------------------------------
+*/
+export function finishInterception() {
+  console.log(`Finished interception sequence`);
+  cancelAnimationFrame(globalState.animationFrameId);
+
+  // Show correct button
+  updateButtonVisibility();
+
+  // Display final trial info
+  displayTrialResults();
+
+  if (globalState.isEasyMode) {
+    handleEducationMode();
+  } else {
+    handleMainMode();
+  }
+}
+
+function updateButtonVisibility() {
+  if (globalState.curTrial === globalState.NUM_MAIN_TRIALS) {
+    finishButton.style.display = "block";
+  } else {
+    startButton.style.display = "block";
+  }
+}
+
+function displayTrialResults() {
+  infoContent.innerHTML = `<p>Interception Complete</p>`;
+
+  const { totalValueProp, rank, interceptedCnt } = globalState.userSolution;
+
+  const valNow = Math.round(totalValueProp * 100);
+  const rankNow = Math.round(rank);
+  const intercepted = Math.round(interceptedCnt);
+
+  let scoreText = `<p>Your score: ${valNow} (Range: 0-100)</p>
+                   <p>Your choice: ${getOrdinalSuffix(
+                     rankNow
+                   )} best solution</p>`;
+
+  if (intercepted === globalState.NUM_SELECTIONS) {
+    scoreText =
+      `<p>Successfully intercept both selected objects</p>` + scoreText;
+  } else if (intercepted === 1) {
+    scoreText = `<p>Miss Object 2: out of range</p>` + scoreText;
+  } else {
+    scoreText = `<p>Fail to intercept either selected object</p>` + scoreText;
+  }
+
+  resultInfoContent.innerHTML = scoreText;
+}
+
+function handleEducationMode() {
+  const valNow = Math.round(globalState.userSolution.totalValueProp * 100);
+
+  if (valNow === 100) {
+    globalState.needRetry = false;
+    globalState.retryCnt = 0;
+
+    if (globalState.curTrial === globalState.NUM_EDUCATION_TRIALS) {
+      globalState.isEasyMode = false;
+      globalState.curTrial = 0;
+      globalState.retryCnt = 0;
+      showEnterMainGame();
+      initializeExperimentData();
+    }
+  } else {
+    if (globalState.retryCnt < 1) {
+      globalState.needRetry = true;
+      showEnterRetryTrials();
+    } else {
+      globalState.needRetry = false;
+      showEndGame();
+      finishGame(false);
+    }
+  }
+}
+
+function handleMainMode() {}
+
+/*
+--------------------------------------------------------------------------------------
+
+    Other Events
+
+--------------------------------------------------------------------------------------
+*/
 export function revealAISolution() {
   if (globalState.AI_HELP == 2) {
     globalState.canShowRequestAI = true;
 
-    clearCanvas();
-    drawGameCircle();
-    drawObjects();
-    drawPlayer();
+    redrawAll();
   }
 }
 
@@ -173,11 +444,26 @@ export function finishGame(isPass) {
   experimentContainer.style.display = "none";
 
   if (isPass) {
+    finalizePreviousTrial();
+
+    // Update end_time for current experiment (todo: more experiments)
+    const experiment = User.experiments[globalState.curExperiment];
+    if (experiment) {
+      experiment.end_time = getCurrentDate();
+    }
+
+    // Set end_time for user
+    User.end_time = getCurrentDate();
+
     // save data to firebase
     import("../firebase/dataProcessor.js").then((module) =>
       module.saveTrialData()
     );
+
     showFeedback();
   }
+
+  stopTimer("think");
+  stopTimer("trial");
   // TODO: redirect to prolific
 }

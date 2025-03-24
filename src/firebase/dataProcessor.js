@@ -2,11 +2,18 @@
 import { initializeApp } from "firebase/app";
 
 // Import Firestore
-import { getFirestore, doc, setDoc, collection } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  collection,
+  writeBatch,
+  updateDoc,
+} from "firebase/firestore";
 
 // Import Authentication
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
-import { User } from "../data/model";
+import { User } from "../logic/collectData";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD3a4Fpidhih8x1piqgojtVt5pV-Nz1b0E",
@@ -52,35 +59,85 @@ await onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Function to add user data
 /**
- * @param {User} user
+ * Save full user + experiments + trials to Firestore.
  */
-async function addUser(user) {
+export async function saveTrialData() {
   try {
-    console.log(
-      "User-prolific_pid:",
-      user.prolific_pid,
-      "create_time:",
-      user.create_time,
-      "end_time:",
-      user.end_time,
-      "feedback:",
-      user.feedback
-    );
-    await setDoc(doc(db, "users", user.prolific_pid), {
-      prolific_pid: user.prolific_pid,
-      create_time: user.create_time,
-      end_time: user.end_time,
-      feedback: user.feedback,
-      experiments: [``],
+    const userDocRef = doc(db, "users", User.prolific_pid);
+
+    // Step 1: Save main user info
+    await setDoc(userDocRef, {
+      prolific_pid: User.prolific_pid,
+      create_time: User.create_time,
+      end_time: User.end_time,
     });
-    console.log(`User ${user.prolific_pid} added successfully!`);
+
+    // Step 2: Save experiments
+    for (const experiment of User.experiments) {
+      const expRef = doc(
+        collection(userDocRef, "experiments"),
+        `${experiment.experiment_id}`
+      );
+
+      await setDoc(expRef, {
+        experiment_id: experiment.experiment_id,
+        create_time: experiment.create_time,
+        end_time: experiment.end_time,
+        num_trials: experiment.num_trials,
+      });
+
+      // Step 3: Save all trials under this experiment
+      const trialBatch = writeBatch(db);
+      for (const trial of experiment.trials) {
+        const trialRef = doc(collection(expRef, "trials"), `${trial.trial_id}`);
+
+        trialBatch.set(trialRef, {
+          trial_id: trial.trial_id,
+          create_time: trial.create_time,
+          end_time: trial.end_time,
+          performance: trial.performance,
+          user_score: trial.user_score,
+          best_score: trial.best_score,
+          replay_num: trial.replay_num,
+          reselect_num: trial.reselect_num,
+          think_time: trial.think_time,
+          total_time: trial.total_time,
+          ai_choice: trial.ai_choice,
+          best_choice: trial.best_choice,
+          user_choice: trial.user_choice,
+        });
+      }
+      await trialBatch.commit();
+    }
+
+    console.log(`✅ User ${User.prolific_pid}'s data saved to Firestore.`);
   } catch (error) {
-    console.error("Error adding user: ", error);
+    console.error("❌ Failed to save trial data:", error);
   }
 }
 
-export function saveTrialData() {
-  addUser(User);
+/**
+ * Save user feedback to Firestore under subcollection `feedback`.
+ * @param {Object} feedbackData
+ */
+export async function saveFeedbackData(feedbackData) {
+  try {
+    const userRef = doc(db, "users", User.prolific_pid);
+    const feedbackRef = doc(collection(userRef, "feedback"), "feedback_main");
+
+    // ✅ Save feedback + update user end_time
+    await Promise.all([
+      setDoc(feedbackRef, {
+        ...feedbackData,
+      }),
+      updateDoc(userRef, {
+        end_time: User.end_time,
+      }),
+    ]);
+
+    console.log("✅ Feedback saved and end_time updated in Firestore.");
+  } catch (error) {
+    console.error("❌ Failed to save feedback:", error);
+  }
 }

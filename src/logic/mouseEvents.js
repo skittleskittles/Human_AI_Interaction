@@ -1,10 +1,5 @@
 import { globalState } from "../data/variable";
-import {
-  clearCanvas,
-  drawGameCircle,
-  drawObjects,
-  drawPlayer,
-} from "./drawing";
+import { drawObjects, redrawAll } from "./drawing";
 import {
   canvas,
   replayButton,
@@ -23,10 +18,7 @@ export function handleMouseHover(event) {
       Math.hypot(mouseX - object.x, mouseY - object.y) <= object.radius
   );
 
-  clearCanvas();
-  drawGameCircle();
-  drawObjects();
-  drawPlayer();
+  redrawAll();
 }
 
 // Function to handle object selection

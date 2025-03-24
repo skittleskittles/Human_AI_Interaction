@@ -57,3 +57,23 @@ export function generateUID(length = 16) {
 
   return uid;
 }
+
+export function getCurrentDate() {
+  return new Date();
+}
+
+export function getOrdinalSuffix(n) {
+  if (n >= 11 && n <= 13) {
+    return `${n}th`; // Special case for 11th, 12th, 13th
+  }
+  switch (n % 10) {
+    case 1:
+      return `${n}st`;
+    case 2:
+      return `${n}nd`;
+    case 3:
+      return `${n}rd`;
+    default:
+      return `${n}th`;
+  }
+}
