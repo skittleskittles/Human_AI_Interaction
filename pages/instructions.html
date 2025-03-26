@@ -12,7 +12,7 @@
   <body>
     <div class="instructionSubContainer">
       <!-- Page 1 -->
-      <div id="instructionPage-1" class="pageContainer active">
+      <div id="instructionPage-1" class="pageContainer">
         <h2 style="color: red">Please Read All Instructions Carefully</h2>
         <p>
           This experiment examines how people plan and adapt in a dynamic
@@ -200,7 +200,8 @@
 
       <div class="navigation-buttons">
         <button id="prevInstructionBtn" hidden>Previous</button>
-        <button id="nextInstructionBtn">Next</button>
+        <button id="nextInstructionBtn" data-locked="false">Next</button>
+        <div id="nextTooltip" class="tooltip" style="display: none"></div>
       </div>
     </div>
   </body>

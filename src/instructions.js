@@ -9,60 +9,160 @@ import { startGame } from ".";
 import { redrawAll } from "./logic/drawing";
 import { initializeObjects, initializePlayer } from "./logic/initialize";
 
+/*
+--------------------------------------------------------------------------------------
+
+    Instructions page (videos and images)
+
+--------------------------------------------------------------------------------------
+*/
+
 export function showInstructions() {
   fetch("instructions.html")
     .then((response) => response.text())
     .then((html) => {
-      instructionsContainer.innerHTML = html;
-      instructionsContainer.style.display = "block";
-
-      const prevButton = document.getElementById("prevInstructionBtn");
-      const nextButton = document.getElementById("nextInstructionBtn");
-
-      let currentPage = 1;
-      const totalPages = 8;
-
-      function showPage(pageNumber) {
-        for (let i = 1; i <= totalPages; i++) {
-          document
-            .getElementById("instructionPage-" + i)
-            .classList.remove("active");
-        }
-        document
-          .getElementById("instructionPage-" + pageNumber)
-          .classList.add("active");
-
-        if (pageNumber === 1) {
-          prevButton.disabled = true;
-          prevButton.hidden = true;
-        } else {
-          prevButton.disabled = false;
-          prevButton.hidden = false;
-        }
-      }
-
-      prevButton.addEventListener("click", function () {
-        if (currentPage > 1) {
-          currentPage--;
-          showPage(currentPage);
-        }
-      });
-
-      nextButton.addEventListener("click", function () {
-        if (currentPage < totalPages) {
-          currentPage++;
-          showPage(currentPage);
-        } else {
-          instructionsContainer.style.display = "none";
-          experimentContainer.style.display = "block";
-          globalState.isEasyMode = true;
-          showEnterEducationTrials();
-          startGame();
-        }
-      });
+      loadInstructionsHTML(html);
+      initializeInstructionState();
+      setupInstructionNavigation();
+      showInstructionPage(currentPage);
     });
 }
 
+let currentPage = 1;
+const totalPages = 8;
+const unlockedPages = new Set();
+let timer = null;
+let countdownInterval = null;
+let originalNextText = "Next";
+
+function loadInstructionsHTML(html) {
+  instructionsContainer.innerHTML = html;
+  instructionsContainer.style.display = "block";
+}
+
+function initializeInstructionState() {
+  currentPage = 1;
+  unlockedPages.clear();
+}
+
+function setupInstructionNavigation() {
+  const prevButton = document.getElementById("prevInstructionBtn");
+  const nextButton = document.getElementById("nextInstructionBtn");
+
+  prevButton.addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      showInstructionPage(currentPage);
+    }
+  });
+
+  nextButton.addEventListener("click", () => {
+    const page = document.getElementById(`instructionPage-${currentPage}`);
+    const video = page?.querySelector("video");
+
+    if (nextButton.dataset.locked === "true") {
+      if (video) {
+        showNextTooltip("Please watch full video to continue");
+      }
+      return;
+    }
+    if (currentPage < totalPages) {
+      currentPage++;
+      showInstructionPage(currentPage);
+    } else {
+      instructionsContainer.style.display = "none";
+      experimentContainer.style.display = "block";
+      globalState.isEasyMode = true;
+      showEnterEducationTrials();
+      startGame();
+    }
+  });
+}
+
+function showNextTooltip(message) {
+  const tooltip = document.getElementById("nextTooltip");
+  tooltip.textContent = message;
+  tooltip.style.display = "block";
+  tooltip.style.opacity = "1";
+
+  setTimeout(() => {
+    tooltip.style.opacity = "0";
+    setTimeout(() => {
+      tooltip.style.display = "none";
+    }, 300);
+  }, 3000);
+}
+
+function showInstructionPage(index) {
+  if (timer) clearTimeout(timer);
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  for (let i = 1; i <= totalPages; i++) {
+    document.getElementById(`instructionPage-${i}`)?.classList.remove("active");
+  }
+  document.getElementById(`instructionPage-${index}`)?.classList.add("active");
+
+  const prevButton = document.getElementById("prevInstructionBtn");
+  const nextButton = document.getElementById("nextInstructionBtn");
+
+  prevButton.hidden = index === 1;
+  nextButton.textContent = index === totalPages ? "Start" : originalNextText;
+
+  handleInstructionUnlock(index);
+}
+
+function handleInstructionUnlock(pageIndex) {
+  const nextButton = document.getElementById("nextInstructionBtn");
+  if (unlockedPages.has(pageIndex)) {
+    nextButton.classList.remove("disabled-visual");
+    nextButton.dataset.locked = "false";
+    nextButton.textContent =
+      currentPage === totalPages ? "Start" : originalNextText;
+    return;
+  }
+
+  const page = document.getElementById(`instructionPage-${pageIndex}`);
+  const video = page?.querySelector("video");
+  nextButton.classList.add("disabled-visual");
+  nextButton.dataset.locked = "true";
+
+  if (video) {
+    const onEnded = () => {
+      nextButton.classList.remove("disabled-visual");
+      nextButton.dataset.locked = "false";
+      nextButton.textContent =
+        currentPage === totalPages ? "Start" : originalNextText;
+      unlockedPages.add(pageIndex);
+      video.removeEventListener("ended", onEnded);
+    };
+    video.addEventListener("ended", onEnded);
+  } else {
+    if (timer) clearTimeout(timer);
+    if (countdownInterval) clearInterval(countdownInterval);
+    let remaining = 5;
+    nextButton.textContent = `${originalNextText} (${remaining})`;
+
+    countdownInterval = setInterval(() => {
+      remaining--;
+      nextButton.textContent = `${originalNextText} (${remaining})`;
+      if (remaining <= 0) {
+        clearInterval(countdownInterval);
+        nextButton.classList.remove("disabled-visual");
+        nextButton.dataset.locked = "false";
+        nextButton.textContent =
+          currentPage === totalPages ? "Start" : originalNextText;
+        unlockedPages.add(pageIndex);
+      }
+    }, 1000);
+  }
+}
+/*
+--------------------------------------------------------------------------------------
+
+    Education rounds
+
+--------------------------------------------------------------------------------------
+*/
 export function showEnterEducationTrials() {
   fetch("modal.html")
     .then((response) => response.text())
