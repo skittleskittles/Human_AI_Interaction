@@ -16,7 +16,7 @@
 .page5-arrow-container-1 {
   position: absolute;
   top: 0px;
-  left: 30%;
+  left: 28%;
   z-index: 20; /* on top of the img */
   text-align: center;
 }
