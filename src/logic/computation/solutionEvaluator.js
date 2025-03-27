@@ -85,6 +85,7 @@ export function enumerateAllSolutions() {
     let moves = [];
     let objDetails = [];
     let isInProgress = true; // Interception is still active
+    let interceptedCnt = 0;
 
     // console.log("===", sequence[0], ",", sequence[1], "===");
     for (let j = 0; j < globalState.NUM_SELECTIONS; j++) {
@@ -106,6 +107,7 @@ export function enumerateAllSolutions() {
         objectNow.dX,
         objectNow.dY
       );
+      if (success) interceptedCnt++;
 
       // Move player and objects if still intercepting
       if (isInProgress) {
@@ -125,20 +127,21 @@ export function enumerateAllSolutions() {
         objectNow,
         success,
         finalDistanceAtCircle,
-        j
+        j,
+        interceptedCnt
       );
-      // console.log(
-      //   "id:",
-      //   id,
-      //   "valueNow:",
-      //   valueNow,
-      //   "objectScore:",
-      //   objectNow.value,
-      //   "success:",
-      //   success,
-      //   "finalDistanceAtCircle:",
-      //   finalDistanceAtCircle
-      // );
+      console.log(
+        "id:",
+        id,
+        "valueNow:",
+        valueNow,
+        "objectScore:",
+        objectNow.value,
+        "success:",
+        success,
+        "finalDistanceAtCircle:",
+        finalDistanceAtCircle
+      );
       totalValue += valueNow;
 
       // If interception fails, mark as not in progress
@@ -155,13 +158,7 @@ export function enumerateAllSolutions() {
     }
 
     let totalValueProp = 0,
-      interceptedCnt = 0,
       rank = 0;
-    for (let i = 0; i < moves.length; i++) {
-      if (moves[i].success) {
-        interceptedCnt++;
-      }
-    }
 
     let solution = {
       sequence,
@@ -228,12 +225,13 @@ function computeObjectValue(
   object,
   success,
   finalDistanceAtCircle,
-  selectionIndex
+  selectionIndex,
+  interceptedCnt
 ) {
   if (success) return object.value;
 
   // Apply weight-based scoring for missed interceptions
-  let weight = selectionIndex == 0 ? 0.75 : 0.25;
+  let weight = selectionIndex - interceptedCnt == 0 ? 0.75 : 0.25;
   let scaledValue =
     ((GAME_RADIUS * 2 - finalDistanceAtCircle) / (GAME_RADIUS * 2)) *
     object.value *

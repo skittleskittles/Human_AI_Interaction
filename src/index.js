@@ -95,12 +95,25 @@ function initGame(seed) {
 
 --------------------------------------------------------------------------------------
 */
-User.create_time = getCurrentDate();
-showConsent();
-// experimentContainer.style.display = "block";
-// globalState.isEasyMode = true;
-// showEnterEducationTrials();
-// startGame();
+
+// startExperiment(false, false); // default
+startExperiment(true, true);
+
+function startExperiment(skipConsent = false, skipEducation = false) {
+  User.create_time = getCurrentDate();
+
+  if (!skipConsent) {
+    showConsent();
+    return;
+  }
+
+  if (!skipEducation) {
+    globalState.isEasyMode = true;
+    showEnterEducationTrials();
+  }
+  experimentContainer.style.display = "block";
+  startGame();
+}
 
 /*
 --------------------------------------------------------------------------------------
