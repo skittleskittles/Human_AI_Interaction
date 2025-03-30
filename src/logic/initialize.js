@@ -2,9 +2,6 @@ import {
   MAX_SPEED,
   MIN_SPEED,
   GAME_RADIUS,
-  refreshRate,
-  speedMultiplier,
-  OBSERVATION_FRAMES,
   alphaParam,
   betaParam,
 } from "../data/constant.js";
@@ -23,19 +20,22 @@ export function initializeObjects(isEasyMode, needRetry) {
     globalState.objects = [];
 
     const numObjects = globalState.NUM_OBJECTS;
-    const specialSpeed =
-      ((MAX_SPEED - MIN_SPEED) * speedMultiplier) / refreshRate;
+    const specialSpeed = (MAX_SPEED - MIN_SPEED) / globalState.refreshRate;
     const offset = GAME_RADIUS - GAME_RADIUS / 3; // Position special objects near the edge
     const specialFinalRadius = Math.abs(
-      offset - specialSpeed * OBSERVATION_FRAMES
+      offset - specialSpeed * globalState.OBSERVATION_FRAMES
     );
 
     // Create objects for easy mode
     if (isEasyMode) {
       if (globalState.curTrial == 1) {
-        globalState.objects = educate1Objects;
+        globalState.objects = educate1Objects.map((obj) =>
+          adjustObjectForRefreshRate(obj)
+        );
       } else {
-        globalState.objects = educate2Objects;
+        globalState.objects = educate2Objects.map((obj) =>
+          adjustObjectForRefreshRate(obj)
+        );
       }
       return;
     }
@@ -91,6 +91,15 @@ function createSpecialObjects(specialSpeed, offset) {
   }
 }
 
+function adjustObjectForRefreshRate(obj) {
+  return {
+    ...obj,
+    speed: obj.speed / globalState.speedMultiplier,
+    dX: obj.dX / globalState.speedMultiplier,
+    dY: obj.dY / globalState.speedMultiplier,
+  };
+}
+
 /**
  * Generates a random object positioned far from the center.
  */
@@ -105,7 +114,7 @@ function generateRandomObject(isEasyMode, specialFinalRadius) {
     let randomRadius =
       globalState.randomGenerator() * (GAME_RADIUS * 0.6) + GAME_RADIUS / 3;
     let randomStartAngle = globalState.randomGenerator() * Math.PI * 2;
-    speed = (randomSpeed * speedMultiplier) / refreshRate;
+    speed = randomSpeed / globalState.refreshRate;
 
     x0 = globalState.centerX + Math.cos(randomStartAngle) * randomRadius;
     y0 = globalState.centerY + Math.sin(randomStartAngle) * randomRadius;
@@ -114,8 +123,8 @@ function generateRandomObject(isEasyMode, specialFinalRadius) {
     dy = speed * Math.sin(randomDirection);
 
     // Predict final position to ensure it stays inside bounds
-    const finalx = x0 + dx * OBSERVATION_FRAMES;
-    const finaly = y0 + dy * OBSERVATION_FRAMES;
+    const finalx = x0 + dx * globalState.OBSERVATION_FRAMES;
+    const finaly = y0 + dy * globalState.OBSERVATION_FRAMES;
     const finalRadius = Math.sqrt(
       (finalx - globalState.centerX) ** 2 + (finaly - globalState.centerY) ** 2
     );
@@ -154,7 +163,7 @@ export function initializePlayer() {
   y0 = globalState.centerY;
   //randomSpeed = randomGenerator() * (MAX_SPEED - MIN_SPEED) + MIN_SPEED; // Speed between 50 and 100
   randomSpeed = MAX_SPEED;
-  speed = (randomSpeed * speedMultiplier) / refreshRate;
+  speed = randomSpeed / globalState.refreshRate;
   dx = 0;
   dy = 0;
   globalState.player = {

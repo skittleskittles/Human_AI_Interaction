@@ -14,6 +14,11 @@ export const globalState = {
 
   isDebugMode: false,
 
+  refreshRate: 60, // refresh rate of the device
+  speedMultiplier: 1, // Multiplier to adjust speed based on refresh rate
+  OBSERVATION_FRAMES: Math.round(3000 * (60 / 1000)), // 3000 ms for demo
+  INTERCEPTION_FRAMES: Math.round(2000 * (60 / 1000)), // 2000 ms for interception
+
   randomGenerator: null, // Global variables for random generator (implements deterministic sequence that can be recreated in other languages)
   centerX: 0,
   centerY: 0,
@@ -24,7 +29,6 @@ export const globalState = {
   lastRoundObjects: [], // Array to hold object properties
   selectedObjects: [], // Tracks selected objects for interception sequence
   hoverObjectIndex: -1, // Tracks which object is being hovered over
-  speedMultiplier: 1, // Multiplier to adjust speed based on refresh rate
 
   player: {
     x0: 0,
