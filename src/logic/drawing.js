@@ -7,8 +7,7 @@ function drawArrows() {
   globalState.objects.forEach((object) => {
     if (!object.isIntercepted) {
       const arrowLength =
-        Math.sqrt(object.dX ** 2 + object.dY ** 2) * ARROW_FACTOR; // Scale speed for arrow length
-
+        object.speed * globalState.speedMultiplier * ARROW_FACTOR; // Scale speed for arrow length
       const angle = Math.atan2(object.dY, object.dX);
 
       const startX = object.x;
@@ -48,8 +47,7 @@ function drawArrows() {
 function drawPlayerArrow() {
   // Draw the player arrow
   const arrowLength =
-    Math.sqrt(globalState.player.dX ** 2 + globalState.player.dY ** 2) *
-    ARROW_FACTOR; // Scale speed for arrow length
+    globalState.player.speed * globalState.speedMultiplier * ARROW_FACTOR; // Scale speed for arrow length
 
   const angle = Math.atan2(globalState.player.dY, globalState.player.dX);
 

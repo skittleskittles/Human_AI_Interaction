@@ -17,6 +17,7 @@ import {
   lcg,
   generateUID,
   getCurrentDate,
+  measureRefreshRate,
 } from "./utils/utils";
 import { generatePermutations } from "./logic/computation/solutionEvaluator";
 import {
@@ -95,9 +96,13 @@ function initGame(seed) {
 
 --------------------------------------------------------------------------------------
 */
-
-// startExperiment(false, false); // default
-startExperiment(true, true);
+measureRefreshRate().then(({ refreshRate, speedMultiplier }) => {
+  globalState.refreshRate = refreshRate;
+  globalState.speedMultiplier = speedMultiplier;
+  globalState.OBSERVATION_FRAMES = Math.round(3000 * (refreshRate / 1000));
+  globalState.INTERCEPTION_FRAMES = Math.round(2000 * (refreshRate / 1000));
+  startExperiment(false, false);
+});
 
 function startExperiment(skipConsent = false, skipEducation = false) {
   User.create_time = getCurrentDate();

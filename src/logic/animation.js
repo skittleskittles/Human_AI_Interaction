@@ -1,4 +1,4 @@
-import { OBSERVATION_FRAMES, GAME_RADIUS } from "../data/constant.js";
+import { GAME_RADIUS } from "../data/constant.js";
 import { globalState } from "../data/variable.js";
 import { redrawAll } from "./drawing.js";
 import { endDemo } from "./gameEvents.js";
@@ -14,7 +14,7 @@ export function animateObjects() {
   globalState.totalFrames++;
 
   // Continue animation or end demo
-  if (globalState.totalFrames < OBSERVATION_FRAMES) {
+  if (globalState.totalFrames < globalState.OBSERVATION_FRAMES) {
     globalState.animationFrameId = requestAnimationFrame(animateObjects);
   } else {
     endDemo();

@@ -77,3 +77,33 @@ export function getOrdinalSuffix(n) {
       return `${n}th`;
   }
 }
+
+// Function to measure the refresh rate
+export function measureRefreshRate() {
+  let lastTimestamp = null;
+  let frameTimestamps = [];
+  const measureDuration = 1000; // Measure over 1 second
+
+  return new Promise((resolve) => {
+    function measureFrame(timestamp) {
+      if (lastTimestamp !== null) {
+        const frameDuration = timestamp - lastTimestamp;
+        frameTimestamps.push(frameDuration);
+      }
+      lastTimestamp = timestamp;
+
+      if (frameTimestamps.length < measureDuration / 16.67) {
+        requestAnimationFrame(measureFrame);
+      } else {
+        const avgFrameDuration =
+          frameTimestamps.reduce((sum, time) => sum + time, 0) /
+          frameTimestamps.length;
+        const refreshRate = Math.round(1000 / avgFrameDuration) || 60;
+        const speedMultiplier = refreshRate / 60;
+        resolve({ refreshRate, speedMultiplier });
+      }
+    }
+
+    requestAnimationFrame(measureFrame);
+  });
+}
