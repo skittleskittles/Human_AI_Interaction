@@ -19,13 +19,6 @@ export function initializeObjects(isEasyMode, needRetry) {
   } else {
     globalState.objects = [];
 
-    const numObjects = globalState.NUM_OBJECTS;
-    const specialSpeed = (MAX_SPEED - MIN_SPEED) / globalState.refreshRate;
-    const offset = GAME_RADIUS - GAME_RADIUS / 3; // Position special objects near the edge
-    const specialFinalRadius = Math.abs(
-      offset - specialSpeed * globalState.OBSERVATION_FRAMES
-    );
-
     // Create objects for easy mode
     if (isEasyMode) {
       if (globalState.curTrial == 1) {
@@ -40,9 +33,20 @@ export function initializeObjects(isEasyMode, needRetry) {
       return;
     }
 
+    const numObjects = globalState.NUM_OBJECTS;
+
+    const isAttentionCheck =
+      globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
+    if (isAttentionCheck) {
+      globalState.objects = educate1Objects.map((obj) =>
+        adjustObjectForRefreshRate(obj)
+      );
+      return;
+    }
+
     // Create random objects
     for (let i = 0; i < numObjects; i++) {
-      let newObject = generateRandomObject(isEasyMode, specialFinalRadius);
+      let newObject = generateRandomObject(isEasyMode);
       globalState.objects.push(newObject);
     }
   }
@@ -103,7 +107,7 @@ function adjustObjectForRefreshRate(obj) {
 /**
  * Generates a random object positioned far from the center.
  */
-function generateRandomObject(isEasyMode, specialFinalRadius) {
+function generateRandomObject(isEasyMode) {
   let x0, y0, dx, dy, speed;
   let isValid = false;
 
@@ -129,9 +133,7 @@ function generateRandomObject(isEasyMode, specialFinalRadius) {
       (finalx - globalState.centerX) ** 2 + (finaly - globalState.centerY) ** 2
     );
 
-    isValid = isEasyMode
-      ? finalRadius > specialFinalRadius + 80 && finalRadius < GAME_RADIUS - 20
-      : finalRadius > 100 && finalRadius < GAME_RADIUS - 50;
+    isValid = finalRadius > 100 && finalRadius < GAME_RADIUS - 50;
   } while (!isValid);
 
   let value = sampleBeta(alphaParam, betaParam); // Random value between 0 and 1

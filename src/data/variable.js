@@ -1,9 +1,16 @@
 export const globalState = {
   NUM_SELECTIONS: 2, // Maximum number of objects to select
   NUM_OBJECTS: 10, // Number of animated objects
-  NUM_MAIN_TRIALS: 15,
+  NUM_MAIN_TRIALS: 82,
   NUM_EDUCATION_TRIALS: 2,
   AI_HELP: 0,
+
+  ATTENTION_CHECK_TRIALS: {
+    16: false, // 15 + 1
+    57: false, // 55 + 1
+  },
+
+  passAllExperiments: false,
 
   isEasyMode: false,
   needRetry: false,

@@ -138,6 +138,6 @@ export function startGame() {
   interceptionButton.addEventListener("click", startInterception);
   aiRequest.addEventListener("click", revealAISolution);
   finishButton.addEventListener("click", () => {
-    finishGame(true);
+    finishGame();
   });
 }

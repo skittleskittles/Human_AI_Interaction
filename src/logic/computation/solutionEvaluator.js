@@ -130,18 +130,18 @@ export function enumerateAllSolutions() {
         j,
         interceptedCnt
       );
-      console.log(
-        "id:",
-        id,
-        "valueNow:",
-        valueNow,
-        "objectScore:",
-        objectNow.value,
-        "success:",
-        success,
-        "finalDistanceAtCircle:",
-        finalDistanceAtCircle
-      );
+      // console.log(
+      //   "id:",
+      //   id,
+      //   "valueNow:",
+      //   valueNow,
+      //   "objectScore:",
+      //   objectNow.value,
+      //   "success:",
+      //   success,
+      //   "finalDistanceAtCircle:",
+      //   finalDistanceAtCircle
+      // );
       totalValue += valueNow;
 
       // If interception fails, mark as not in progress

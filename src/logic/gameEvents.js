@@ -44,7 +44,7 @@ import { getOrdinalSuffix, getCurrentDate } from "../utils/utils.js";
 --------------------------------------------------------------------------------------
 */
 export function startTrial() {
-  finalizePreviousTrial();
+  recordPreviousTrialData();
   prepareNewTrial();
 
   console.log(`------curTrial: ${globalState.curTrial}---------`);
@@ -58,22 +58,25 @@ export function startTrial() {
   startTrialAnimation();
 }
 
-function finalizePreviousTrial() {
+function recordPreviousTrialData() {
   const lastTrial = getCurrentTrialData();
   if (lastTrial && !globalState.isEasyMode) {
     const trialSec = getTimerValue("trial");
-    addToCustomCount(
-      lastTrial.total_time,
-      trialSec,
-      globalState.canShowAIAnswer
-    );
     updateTrialDataEnd(
       lastTrial,
       globalState.userSolution,
-      globalState.bestSolution
+      globalState.bestSolution,
+      trialSec,
+      globalState.canShowAIAnswer
     );
     console.log("total time: ", trialSec);
   }
+
+  import("../firebase/dataProcessor.js").then((module) => {
+    module.saveSingleTrial(lastTrial, globalState.passAllExperiments); // save the last trial data
+    // (when click 'start next interception', last trial finishes)
+    // if trial doesn't exist, only update user / experiment data
+  });
 
   stopTimer("trial");
 }
@@ -393,9 +396,7 @@ function displayTrialResults() {
 }
 
 function handleEducationMode() {
-  const valNow = Math.round(globalState.userSolution.totalValueProp * 100);
-
-  if (valNow === 100) {
+  if (globalState.userSolution == globalState.bestSolution) {
     globalState.needRetry = false;
     globalState.retryCnt = 0;
 
@@ -413,12 +414,28 @@ function handleEducationMode() {
     } else {
       globalState.needRetry = false;
       showEndGame();
-      finishGame(false);
+      finishGame();
     }
   }
 }
 
-function handleMainMode() {}
+function handleMainMode() {
+  const isAttentionCheck =
+    globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
+  if (isAttentionCheck) {
+    // Example check logic
+    const passed = globalState.userSolution == globalState.bestSolution;
+    globalState.ATTENTION_CHECK_TRIALS[globalState.curTrial] = passed;
+  }
+
+  // if pass all attention check trials and finish all trials
+  if (globalState.curTrial === globalState.NUM_MAIN_TRIALS) {
+    const passedAllAttentionChecks = Object.values(
+      globalState.ATTENTION_CHECK_TRIALS
+    ).every(Boolean);
+    globalState.passAllExperiments = passedAllAttentionChecks;
+  }
+}
 
 /*
 --------------------------------------------------------------------------------------
@@ -435,7 +452,7 @@ export function revealAISolution() {
   }
 }
 
-export function finishGame(isPass) {
+export function finishGame() {
   console.log("Game finished");
 
   cancelAnimationFrame(globalState.animationFrameId);
@@ -443,27 +460,18 @@ export function finishGame(isPass) {
   // Hide the main game container
   experimentContainer.style.display = "none";
 
-  if (isPass) {
-    finalizePreviousTrial();
-
-    // Update end_time for current experiment (todo: more experiments)
-    const experiment = User.experiments[globalState.curExperiment];
-    if (experiment) {
-      experiment.end_time = getCurrentDate();
-    }
-
-    // Set end_time for user
-    User.end_time = getCurrentDate();
-
-    // save data to firebase
-    import("../firebase/dataProcessor.js").then((module) =>
-      module.saveTrialData()
-    );
-
-    showFeedback();
-  }
+  // Record data
+  recordPreviousTrialData(globalState.passAllExperiments);
 
   stopTimer("think");
   stopTimer("trial");
-  // TODO: redirect to prolific
+
+  if (globalState.curTrial == globalState.NUM_MAIN_TRIALS) {
+    // finish all trials
+    showFeedback();
+    // TODO: redirect to prolific
+  } else {
+    // TODO: redirect to prolific
+    return;
+  }
 }

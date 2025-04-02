@@ -41,6 +41,17 @@ export function createNewExperimentData(experiment_id, num_trials) {
 }
 
 /**
+ * Returns the current Experiment object from User based on globalState.
+ * @returns {Experiment}
+ */
+export function getCurrentExperimentData() {
+  if (User.experiments.length === 0) {
+    return null;
+  }
+  return User.experiments[globalState.curExperiment];
+}
+
+/**
  * @typedef {Object} Trial
  * @property {number} trial_id
  * @property {Date} create_time
@@ -84,17 +95,20 @@ export function createNewTrialData(trial_id) {
  * @param {Trial} trial - the current trial object
  * @param {Object} scores - { userScore: number, bestScore: number }
  */
-export function updateTrialDataEnd(trial, userSolution, bestSolution) {
+export function updateTrialDataEnd(
+  trial,
+  userSolution,
+  bestSolution,
+  trialSec,
+  canShowAIAnswer
+) {
   trial.end_time = getCurrentDate();
   trial.user_score = userSolution.totalValue;
   trial.best_score = bestSolution.totalValue;
   trial.performance = userSolution.totalValueProp * 100;
 
   recordBestChoiceData(trial, bestSolution);
-
-  // todo fsy
-  const durationSec = Math.round((trial.end_time - trial.create_time) / 1000);
-  trial.total_time.total = durationSec;
+  addToCustomCount(trial.total_time, trialSec, canShowAIAnswer);
 }
 
 /**
@@ -102,13 +116,10 @@ export function updateTrialDataEnd(trial, userSolution, bestSolution) {
  * @returns {Trial}
  */
 export function getCurrentTrialData() {
-  if (
-    User.experiments.length === 0 ||
-    User.experiments[globalState.curExperiment].trials.length === 0
-  ) {
+  const currentExperiment = getCurrentExperimentData();
+  if (!currentExperiment || currentExperiment.trials.length === 0) {
     return null;
   }
-  const currentExperiment = User.experiments[globalState.curExperiment];
   return currentExperiment?.trials[globalState.curTrial - 1];
 }
 
