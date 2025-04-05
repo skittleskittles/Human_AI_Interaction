@@ -8,6 +8,7 @@ import { globalState } from "./data/variable";
 import { startGame } from ".";
 import { redrawAll } from "./logic/drawing";
 import { initializeObjects, initializePlayer } from "./logic/initialize";
+import { getCurrentDate } from "./utils/utils.js";
 
 /*
 --------------------------------------------------------------------------------------
@@ -75,6 +76,10 @@ function setupInstructionNavigation() {
       globalState.isEasyMode = true;
       showEnterEducationTrials();
       startGame();
+      // update user data before enter eduation trials
+      import("./firebase/saveData2Firebase.js").then((module) => {
+        module.saveOrUpdateUser(getCurrentDate());
+      });
     }
   });
 }
@@ -227,7 +232,7 @@ export function showEnterMainGame() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            Congratulations! You have completed all the trial rounds. 
+            Congratulations! You have completed all the trial rounds. <br/>
             Now, proceed to the main game.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";

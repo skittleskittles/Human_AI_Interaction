@@ -1,7 +1,7 @@
-import { showInstructions,  } from "./instructions";
-import {
-  consentContainer,
-} from "./data/domElements";
+import { showInstructions } from "./instructions";
+import { consentContainer } from "./data/domElements";
+import { getCurrentDate } from "./utils/utils.js";
+import { User } from "./logic/collectData.js";
 
 export function showConsent() {
   fetch("consent.html")
@@ -18,6 +18,10 @@ export function showConsent() {
 
       proceedButton.addEventListener("click", function () {
         consentContainer.style.display = "none";
+        User.is_consent = true;
+        import("./firebase/saveData2Firebase.js").then((module) => {
+          module.saveOrUpdateUser(getCurrentDate()); // update user data
+        });
         showInstructions();
       });
     });

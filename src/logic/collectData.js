@@ -11,15 +11,20 @@ import { getCurrentDate } from "../utils/utils.js";
  * @property {string} prolific_pid
  * @property {Date} create_time
  * @property {Date} end_time
- * @property {number} feedback
+ * @property {Feedback} feedback
  * @property {Experiment[]} experiments
+ * @property {boolean} is_consent
+ * @property {boolean} is_passed_education
+ * @property {boolean} is_passed_all_experiments
  */
 export const User = {
   prolific_pid: "",
   create_time: new Date(),
   end_time: new Date(),
-  feedback: 0,
   experiments: [], // Experiment
+  is_consent: false,
+  is_passed_education: false,
+  is_passed_all_experiments: false,
 };
 
 /**
@@ -27,6 +32,8 @@ export const User = {
  * @property {number} experiment_id
  * @property {Date} create_time
  * @property {Date} end_time
+ * @property {boolean} is_passed_attention_check
+ * @property {boolean} is_finished
  * @property {number} num_trials
  * @property {Trial[]} trials
  */
@@ -35,6 +42,8 @@ export function createNewExperimentData(experiment_id, num_trials) {
     experiment_id,
     create_time: getCurrentDate(),
     end_time: getCurrentDate(), // will be updated at the end
+    is_passed_attention_check: false,
+    is_finished: false,
     num_trials,
     trials: [], // will be populated with Trial objects
   };
@@ -91,11 +100,49 @@ export function createNewTrialData(trial_id) {
 }
 
 /**
+ * Updates experiment-level and user-level status after each trial.
+ * Handles attention check results and final trial checks.
+ *
+ * @param {number} experiment
+ * @param {number} curTrial
+ * @param {string} userSolution - The user's selected solution.
+ * @param {string} bestSolution - The correct or optimal solution.
+ */
+export function updateExperimentData(
+  experiment,
+  curTrial,
+  userSolution,
+  bestSolution
+) {
+  // Check if current trial is an attention check trial
+  const isAttentionCheck =
+    curTrial.trial_id in globalState.ATTENTION_CHECK_TRIALS;
+
+  if (isAttentionCheck) {
+    const passed = userSolution === bestSolution;
+    globalState.ATTENTION_CHECK_TRIALS[curTrial.trial_id] = passed;
+    experiment.is_passed_attention_check = Object.values(
+      globalState.ATTENTION_CHECK_TRIALS
+    ).every(Boolean);
+  }
+
+  // Check if this is the last trial of the main experiment
+  const isLastTrial = curTrial.trial_id === globalState.NUM_MAIN_TRIALS;
+  if (isLastTrial) {
+    experiment.is_finished = true;
+
+    // Mark the user's overall experiment pass status
+    User.is_passed_all_experiments =
+      experiment.is_finished && experiment.is_passed_attention_check;
+  }
+}
+
+/**
  * Updates the end info for the current trial
  * @param {Trial} trial - the current trial object
  * @param {Object} scores - { userScore: number, bestScore: number }
  */
-export function updateTrialDataEnd(
+export function updateTrialData(
   trial,
   userSolution,
   bestSolution,

@@ -65,13 +65,11 @@ await onAuthStateChanged(auth, (user) => {
 /**
  * Main function: Save single trial or just update end_times
  */
-export async function saveSingleTrial(trial, isPassAllExperiment) {
+export async function saveSingleTrial(experiment, trial) {
   try {
     const endTime = trial?.end_time || getCurrentDate();
-    const userDocRef = await saveOrUpdateUser(endTime, isPassAllExperiment);
+    const userDocRef = await saveOrUpdateUser(endTime);
 
-    // Determine experiment source
-    const experiment = getCurrentExperimentData();
     if (!experiment) {
       console.warn("⚠️ No experiment found. Skipping experiment update.");
       return;
@@ -80,8 +78,7 @@ export async function saveSingleTrial(trial, isPassAllExperiment) {
     const expRef = await saveOrUpdateExperiment(
       userDocRef,
       experiment,
-      endTime,
-      trial?.trial_id == experiment.num_trials
+      endTime
     );
 
     if (!trial) {
@@ -101,7 +98,7 @@ export async function saveSingleTrial(trial, isPassAllExperiment) {
 /**
  *  Save or update the user document
  */
-async function saveOrUpdateUser(endTime, isPassAllExperiment) {
+export async function saveOrUpdateUser(endTime) {
   const userDocRef = doc(db, "users", User.prolific_pid);
   const userDocSnap = await getDoc(userDocRef);
 
@@ -110,12 +107,16 @@ async function saveOrUpdateUser(endTime, isPassAllExperiment) {
       prolific_pid: User.prolific_pid,
       create_time: User.create_time,
       end_time: endTime,
-      is_pass: isPassAllExperiment,
+      is_consent: User.is_consent,
+      is_passed_education: User.is_passed_education,
+      is_passed_all_experiments: User.is_passed_all_experiments,
     });
   } else {
     await updateDoc(userDocRef, {
       end_time: endTime,
-      is_pass: isPassAllExperiment,
+      is_consent: User.is_consent,
+      is_passed_education: User.is_passed_education,
+      is_passed_all_experiments: User.is_passed_all_experiments,
     });
   }
   console.log(`✅ User ${User.prolific_pid} updated.`);
@@ -125,12 +126,7 @@ async function saveOrUpdateUser(endTime, isPassAllExperiment) {
 /**
  *  Save or update the experiment document
  */
-async function saveOrUpdateExperiment(
-  userDocRef,
-  experiment,
-  endTime,
-  isFinished
-) {
+async function saveOrUpdateExperiment(userDocRef, experiment, endTime) {
   const expRef = doc(
     collection(userDocRef, "experiments"),
     `${experiment.experiment_id}`
@@ -143,12 +139,14 @@ async function saveOrUpdateExperiment(
       create_time: experiment.create_time,
       end_time: endTime,
       num_trials: experiment.num_trials,
-      is_finished: isFinished,
+      is_passed_attention_check: experiment.is_passed_attention_check,
+      is_finished: experiment.is_finished,
     });
   } else {
     await updateDoc(expRef, {
       end_time: endTime,
-      is_finished: isFinished,
+      is_passed_attention_check: experiment.is_passed_attention_check,
+      is_finished: experiment.is_finished,
     });
   }
   console.log(
