@@ -2,7 +2,7 @@ import { feedbackContainer } from "./data/domElements";
 import { globalState } from "./data/variable";
 import { User } from "./logic/collectData";
 import { getCurrentDate } from "./utils/utils";
-import { saveFeedbackData } from "./firebase/dataProcessor";
+import { saveFeedbackData } from "./firebase/saveData2Firebase";
 
 export function showFeedback() {
   // Fetch and insert feedback form dynamically

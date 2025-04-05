@@ -10,8 +10,6 @@ export const globalState = {
     57: false, // 55 + 1
   },
 
-  passAllExperiments: false,
-
   isEasyMode: false,
   needRetry: false,
   retryCnt: 0,

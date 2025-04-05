@@ -106,6 +106,9 @@ measureRefreshRate().then(({ refreshRate, speedMultiplier }) => {
 
 function startExperiment(skipConsent = false, skipEducation = false) {
   User.create_time = getCurrentDate();
+  import("./firebase/saveData2Firebase.js").then((module) => {
+    module.saveOrUpdateUser(getCurrentDate());
+  });
 
   if (!skipConsent) {
     showConsent();
