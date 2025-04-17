@@ -164,7 +164,7 @@ function handleInstructionUnlock(pageIndex) {
 /*
 --------------------------------------------------------------------------------------
 
-    Education rounds
+    Education trials
 
 --------------------------------------------------------------------------------------
 */
@@ -177,7 +177,7 @@ export function showEnterEducationTrials() {
 
       const modalInfo = document.getElementById("modalInfo");
       modalInfo.innerHTML = `<p>
-          Now, you will play ${globalState.NUM_EDUCATION_TRIALS} trial rounds. Please carefully read the
+          Now, you will play ${globalState.NUM_EDUCATION_TRIALS} quality check trials. Please carefully read the
           instructions and make your choices.
         </p>`;
 
@@ -222,7 +222,7 @@ export function showEndGame() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-             Unfortunately, you did not pass the trial rounds. The game is now over.
+             Unfortunately, you did not pass the quality check trials, now the game is over.
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
@@ -232,7 +232,7 @@ export function showEnterMainGame() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            Congratulations! You have completed all the trial rounds. <br/>
+            Congratulations! You have completed all the quality check trials. <br/>
             Now, proceed to the main game.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";

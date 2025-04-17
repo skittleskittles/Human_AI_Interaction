@@ -469,9 +469,23 @@ export function finishGame() {
   if (globalState.curTrial == globalState.NUM_MAIN_TRIALS) {
     // finish all trials
     showFeedback();
-    // TODO: redirect to prolific
+    if (User.is_passed_all_experiments) {
+      setTimeout(() => {
+        window.location.href =
+          "https://app.prolific.com/submissions/complete?cc=C1221VHF";
+      }, 3000);
+    } else {
+      setTimeout(() => {
+        window.location.href =
+          "https://app.prolific.com/submissions/complete?cc=CVVFIIMS";
+      }, 3000);
+    }
   } else {
-    // TODO: redirect to prolific
+    setTimeout(() => {
+      window.location.href =
+        "https://app.prolific.com/submissions/complete?cc=C1A9WJ8O";
+    }, 3000);
+
     return;
   }
 }
