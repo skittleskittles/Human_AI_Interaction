@@ -3,6 +3,7 @@ import { globalState } from "./data/variable";
 import { User } from "./logic/collectData";
 import { getCurrentDate } from "./utils/utils";
 import { saveFeedbackData } from "./firebase/saveData2Firebase";
+import { showFailedAttentionCheck } from "./instructions";
 
 export function showFeedback() {
   // Fetch and insert feedback form dynamically
@@ -82,5 +83,17 @@ async function submit(freeResponse, submitButton, thankYouMessage) {
   // Save feedback data
   await saveFeedbackData(feedbackData);
 
-  // todo: redirect to prolific
+  // redirect to prolific
+  if (User.is_passed_all_experiments) {
+    setTimeout(() => {
+      window.location.href =
+        "https://app.prolific.com/submissions/complete?cc=C1221VHF";
+    }, 3000);
+  } else {
+    showFailedAttentionCheck();
+    setTimeout(() => {
+      window.location.href =
+        "https://app.prolific.com/submissions/complete?cc=CVVFIIMS";
+    }, 3000);
+  }
 }

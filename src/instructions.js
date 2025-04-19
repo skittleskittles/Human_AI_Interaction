@@ -1,13 +1,10 @@
 import {
   instructionsContainer,
   modalContainer,
-  infoContent,
   experimentContainer,
 } from "./data/domElements";
 import { globalState } from "./data/variable";
 import { startGame } from ".";
-import { redrawAll } from "./logic/drawing";
-import { initializeObjects, initializePlayer } from "./logic/initialize";
 import { getCurrentDate } from "./utils/utils.js";
 
 /*
@@ -169,41 +166,13 @@ function handleInstructionUnlock(pageIndex) {
 --------------------------------------------------------------------------------------
 */
 export function showEnterEducationTrials() {
-  fetch("modal.html")
-    .then((response) => response.text())
-    .then((html) => {
-      modalContainer.innerHTML = html;
-      modalContainer.style.display = "block";
-
-      const modalInfo = document.getElementById("modalInfo");
-      modalInfo.innerHTML = `<p>
-          Now, you will play ${globalState.NUM_EDUCATION_TRIALS} quality check trials. Please carefully read the
-          instructions and make your choices.
-        </p>`;
-
-      // Select the dynamically inserted elements
-      const modal = document.getElementById("modalOverlay");
-      const closeModal = document.getElementById("closeModal");
-
-      // Show the modal when the page loads
-      modal.style.display = "flex";
-
-      // Close modal when clicking the "OK" button
-      closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
-        if (globalState.needRetry) {
-          globalState.canShowAIAnswer = true;
-          initializeObjects(globalState.isEasyMode, globalState.needRetry);
-          initializePlayer();
-          redrawAll();
-          infoContent.innerHTML = `<p>
-            You did not select the best answers. <br/>
-            The best answers are displayed as blue numbers. <br/>
-            Please carefully try again in the next sequence.
-          </p>`;
-        }
-      });
-    });
+  modalContainer.style.display = "block";
+  const modalInfo = document.getElementById("modalInfo");
+  modalInfo.innerHTML = `<p>
+      Now, you will play ${globalState.NUM_EDUCATION_TRIALS} quality check trials. Please carefully read the
+      instructions and make your choices.
+      </p>`;
+  document.getElementById("modalOverlay").style.display = "flex";
 }
 
 export function showEnterRetryTrials() {
@@ -223,6 +192,15 @@ export function showEndGame() {
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
              Unfortunately, you did not pass the quality check trials, now the game is over.
+            </p>`;
+  document.getElementById("modalOverlay").style.display = "flex";
+}
+
+export function showFailedAttentionCheck() {
+  modalContainer.style.display = "block";
+  const modalInfo = document.getElementById("modalInfo");
+  modalInfo.innerHTML = `<p>
+            Unfortunately, you did not pass the attention check trials, now the game is over.
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }

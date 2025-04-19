@@ -8,6 +8,7 @@ import {
   aiRequest,
   finishButton,
   experimentContainer,
+  modalContainer,
 } from "./data/domElements";
 import { randSeed } from "./data/constant";
 import { globalState } from "./data/variable";
@@ -30,6 +31,8 @@ import {
 import { clearCanvas, drawGameCircle } from "./logic/drawing";
 import { showConsent } from "./consent";
 import { showEnterEducationTrials } from "./instructions";
+import { redrawAll } from "./logic/drawing";
+import { initializeObjects, initializePlayer } from "./logic/initialize";
 
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
@@ -101,7 +104,7 @@ measureRefreshRate().then(({ refreshRate, speedMultiplier }) => {
   globalState.speedMultiplier = speedMultiplier;
   globalState.OBSERVATION_FRAMES = Math.round(3000 * (refreshRate / 1000));
   globalState.INTERCEPTION_FRAMES = Math.round(2000 * (refreshRate / 1000));
-  startExperiment(false, false);
+  startExperiment(true, false);
 });
 
 function startExperiment(skipConsent = false, skipEducation = false) {
@@ -110,17 +113,38 @@ function startExperiment(skipConsent = false, skipEducation = false) {
     module.saveOrUpdateUser(getCurrentDate());
   });
 
-  if (!skipConsent) {
-    showConsent();
-    return;
-  }
+  fetch("modal.html")
+    .then((response) => response.text())
+    .then((html) => {
+      modalContainer.innerHTML = html;
+      // Close modal when clicking the "OK" button
+      document.getElementById("closeModal").addEventListener("click", () => {
+        document.getElementById("modalOverlay").style.display = "none";
+        if (globalState.needRetry) {
+          globalState.canShowAIAnswer = true;
+          initializeObjects(globalState.isEasyMode, globalState.needRetry);
+          initializePlayer();
+          redrawAll();
+          infoContent.innerHTML = `<p>
+            You did not select the best answers. <br/>
+            The best answers are displayed as blue numbers. <br/>
+            Please carefully try again in the next sequence.
+          </p>`;
+        }
+      });
 
-  if (!skipEducation) {
-    globalState.isEasyMode = true;
-    showEnterEducationTrials();
-  }
-  experimentContainer.style.display = "block";
-  startGame();
+      if (!skipConsent) {
+        showConsent();
+        return;
+      }
+
+      if (!skipEducation) {
+        globalState.isEasyMode = true;
+        showEnterEducationTrials();
+      }
+      experimentContainer.style.display = "block";
+      startGame();
+    });
 }
 
 /*
