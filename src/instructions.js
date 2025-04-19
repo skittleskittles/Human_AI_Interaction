@@ -191,7 +191,8 @@ export function showEndGame() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-             Unfortunately, you did not pass the quality check trials, now the game is over.
+             Unfortunately, you did not pass the quality check trials, now the game is over 
+             and you will be redirected back to Prolific.
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
@@ -200,7 +201,8 @@ export function showFailedAttentionCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            Unfortunately, you did not pass the attention check trials, now the game is over.
+            Unfortunately, you did not pass the attention check trials, now the game is over 
+            and you will be redirected back to Prolific.
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }

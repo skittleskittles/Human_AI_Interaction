@@ -471,8 +471,7 @@ export function finishGame() {
     showFeedback();
   } else {
     setTimeout(() => {
-      window.location.href =
-        "https://app.prolific.com/submissions/complete?cc=C1A9WJ8O";
+      window.location.replace("https://app.prolific.com/submissions/complete?cc=C1A9WJ8O");
     }, 3000);
 
     return;

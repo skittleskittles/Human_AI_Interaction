@@ -60,7 +60,7 @@ if (urlParams.DEBUG !== undefined) {
 
 User.prolific_pid = generateUID();
 if (urlParams.PROLIFIC_PID !== undefined) {
-  User.prolific_pid = Number(urlParams.PROLIFIC_PID);
+  User.prolific_pid = urlParams.PROLIFIC_PID;
 }
 
 // Initial setup

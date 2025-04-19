@@ -86,14 +86,16 @@ async function submit(freeResponse, submitButton, thankYouMessage) {
   // redirect to prolific
   if (User.is_passed_all_experiments) {
     setTimeout(() => {
-      window.location.href =
-        "https://app.prolific.com/submissions/complete?cc=C1221VHF";
+      window.location.replace(
+        "https://app.prolific.com/submissions/complete?cc=C1221VHF"
+      );
     }, 3000);
   } else {
     showFailedAttentionCheck();
     setTimeout(() => {
-      window.location.href =
-        "https://app.prolific.com/submissions/complete?cc=CVVFIIMS";
+      window.location.replace(
+        "https://app.prolific.com/submissions/complete?cc=CVVFIIMS"
+      );
     }, 3000);
   }
 }
