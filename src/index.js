@@ -121,13 +121,23 @@ async function loadModal() {
 
 --------------------------------------------------------------------------------------
 */
-measureRefreshRate().then(({ refreshRate, speedMultiplier }) => {
-  globalState.refreshRate = refreshRate;
-  globalState.speedMultiplier = speedMultiplier;
-  globalState.OBSERVATION_FRAMES = Math.round(3000 * (refreshRate / 1000));
-  globalState.INTERCEPTION_FRAMES = Math.round(2000 * (refreshRate / 1000));
-  startExperiment(true, false);
-});
+initExperimentEnvironment();
+
+async function initExperimentEnvironment() {
+  try {
+    const { refreshRate, speedMultiplier } = await measureRefreshRate();
+    globalState.refreshRate = refreshRate;
+    globalState.speedMultiplier = speedMultiplier;
+    globalState.OBSERVATION_FRAMES = Math.round(3000 * (refreshRate / 1000));
+    globalState.INTERCEPTION_FRAMES = Math.round(2000 * (refreshRate / 1000));
+    await startExperiment(false, false);
+  } catch (error) {
+    console.error("❌ Failed to initialize environment:", error);
+    alert(
+      "Unable to detect your screen refresh rate. Please reload and try again."
+    );
+  }
+}
 
 async function startExperiment(skipConsent = false, skipEducation = false) {
   try {
