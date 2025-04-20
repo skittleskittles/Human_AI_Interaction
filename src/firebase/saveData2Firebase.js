@@ -107,6 +107,15 @@ export async function saveOrUpdateUser(endTime) {
 }
 
 /**
+ *  Check if specific user already exists in database
+ */
+export async function checkIfUserExists(prolific_pid) {
+  const userDocRef = doc(db, "users", prolific_pid);
+  const userDocSnap = await getDoc(userDocRef);
+  return userDocSnap.exists();
+}
+
+/**
  *  Save or update the experiment document
  */
 async function saveOrUpdateExperiment(userDocRef, experiment, endTime) {

@@ -30,9 +30,10 @@ import {
 } from "./logic/gameEvents";
 import { clearCanvas, drawGameCircle } from "./logic/drawing";
 import { showConsent } from "./consent";
-import { showEnterEducationTrials } from "./instructions";
+import { showEnterEducationTrials, showMultipleAttempts } from "./instructions";
 import { redrawAll } from "./logic/drawing";
 import { initializeObjects, initializePlayer } from "./logic/initialize";
+import { checkIfUserExists } from "./firebase/saveData2Firebase.js";
 
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
@@ -92,6 +93,27 @@ function initGame(seed) {
   //startButton.blur();
 }
 
+// Load Modal
+async function loadModal() {
+  const response = await fetch("modal.html");
+  const html = await response.text();
+  modalContainer.innerHTML = html;
+
+  document.getElementById("closeModal").addEventListener("click", () => {
+    document.getElementById("modalOverlay").style.display = "none";
+    if (globalState.needRetry) {
+      globalState.canShowAIAnswer = true;
+      initializeObjects(globalState.isEasyMode, globalState.needRetry);
+      initializePlayer();
+      redrawAll();
+      infoContent.innerHTML = `
+        <p>You did not select the best answers.<br/>
+        The best answers are displayed as blue numbers.<br/>
+        Please carefully try again in the next sequence.</p>`;
+    }
+  });
+}
+
 /*
 --------------------------------------------------------------------------------------
 
@@ -107,44 +129,41 @@ measureRefreshRate().then(({ refreshRate, speedMultiplier }) => {
   startExperiment(true, false);
 });
 
-function startExperiment(skipConsent = false, skipEducation = false) {
-  User.create_time = getCurrentDate();
-  import("./firebase/saveData2Firebase.js").then((module) => {
-    module.saveOrUpdateUser(getCurrentDate());
-  });
+async function startExperiment(skipConsent = false, skipEducation = false) {
+  try {
+    await loadModal();
 
-  fetch("modal.html")
-    .then((response) => response.text())
-    .then((html) => {
-      modalContainer.innerHTML = html;
-      // Close modal when clicking the "OK" button
-      document.getElementById("closeModal").addEventListener("click", () => {
-        document.getElementById("modalOverlay").style.display = "none";
-        if (globalState.needRetry) {
-          globalState.canShowAIAnswer = true;
-          initializeObjects(globalState.isEasyMode, globalState.needRetry);
-          initializePlayer();
-          redrawAll();
-          infoContent.innerHTML = `<p>
-            You did not select the best answers. <br/>
-            The best answers are displayed as blue numbers. <br/>
-            Please carefully try again in the next sequence.
-          </p>`;
-        }
-      });
+    const userExists = await checkIfUserExists(User.prolific_pid);
+    if (userExists) {
+      showMultipleAttempts();
+      setTimeout(() => {
+        window.location.replace(
+          "https://app.prolific.com/submissions/complete?cc=C15OCGW5"
+        );
+      }, 3000);
+      return;
+    }
 
-      if (!skipConsent) {
-        showConsent();
-        return;
-      }
+    User.create_time = getCurrentDate();
+    const { saveOrUpdateUser } = await import(
+      "./firebase/saveData2Firebase.js"
+    );
+    await saveOrUpdateUser(getCurrentDate());
 
-      if (!skipEducation) {
-        globalState.isEasyMode = true;
-        showEnterEducationTrials();
-      }
-      experimentContainer.style.display = "block";
-      startGame();
-    });
+    if (!skipConsent) {
+      showConsent();
+      return;
+    }
+
+    if (!skipEducation) {
+      globalState.isEasyMode = true;
+      showEnterEducationTrials();
+    }
+    experimentContainer.style.display = "block";
+    startGame();
+  } catch (error) {
+    console.error("❌ Failed to start experiment:", error);
+  }
 }
 
 /*

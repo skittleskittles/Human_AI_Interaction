@@ -207,6 +207,16 @@ export function showFailedAttentionCheck() {
   document.getElementById("modalOverlay").style.display = "flex";
 }
 
+export function showMultipleAttempts() {
+  modalContainer.style.display = "block";
+  const modalInfo = document.getElementById("modalInfo");
+  modalInfo.innerHTML = `<p>
+            You have already participated in this study. Participation is limited to one time only. 
+            Now you will be redirected back to Prolific.
+            </p>`;
+  document.getElementById("modalOverlay").style.display = "flex";
+}
+
 export function showEnterMainGame() {
   console.log("show enter main game");
   modalContainer.style.display = "block";
