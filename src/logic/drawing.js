@@ -1,5 +1,5 @@
 import { ARROW_FACTOR, GAME_RADIUS, playerImage } from "../data/constant.js";
-import { globalState } from "../data/variable.js";
+import { AI_HELP_TYPE, globalState } from "../data/variable.js";
 import { canvas, ctx } from "../data/domElements.js";
 
 // Function to draw arrows indicating direction and speed
@@ -132,8 +132,22 @@ export function drawObjects() {
         );
       }
 
-      if (globalState.canShowRequestAI || globalState.canShowAIAnswer) {
-        let AISelectionIndex = globalState.bestSolution.sequence.indexOf(index);
+      if (globalState.canShowAIAnswer) {
+        // show best or sub optimal solution
+        let AISelectionIndex;
+        const aiHelpTypeToSolution = {
+          [AI_HELP_TYPE.OPTIMAL_AI_BEFORE]: globalState.bestSolution,
+          [AI_HELP_TYPE.OPTIMAL_AI_AFTER]: globalState.bestSolution,
+          [AI_HELP_TYPE.SUB_AI_AFTER]: globalState.subOptimalSolution,
+          [AI_HELP_TYPE.SUBAI_REQUEST]: globalState.subOptimalSolution,
+        };
+
+        const selectedSolution = aiHelpTypeToSolution[globalState.AI_HELP];
+
+        if (selectedSolution) {
+          AISelectionIndex = selectedSolution.sequence.indexOf(index);
+        }
+
         if (AISelectionIndex !== -1) {
           ctx.fillStyle = "blue";
           ctx.font = "24px Arial";
@@ -143,13 +157,6 @@ export function drawObjects() {
             object.y + 8
           );
         }
-      }
-
-      // For debugging
-      if (!true) {
-        ctx.fillStyle = "red";
-        ctx.font = "24px Arial";
-        ctx.fillText(index, object.x + object.radius + 10, object.y + 14);
       }
     }
   });
@@ -187,24 +194,6 @@ function drawPlayer() {
 
   // Draw arrows for player
   //drawPlayerArrow();
-
-  // Visualize interception position (for debugging)
-  if (!true) {
-    if (globalState.userSolution) {
-      let currentMove =
-        globalState.userSolution.moves[globalState.interceptionCounter]; // object that contains all information for intercepting the current object
-      ctx.beginPath();
-      ctx.arc(
-        currentMove.interceptPosX,
-        currentMove.interceptPosY,
-        15,
-        0,
-        Math.PI * 2
-      );
-      ctx.fillStyle = "blue";
-      ctx.fill();
-    }
-  }
 }
 
 // Function to draw the main circle

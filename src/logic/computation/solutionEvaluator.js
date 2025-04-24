@@ -178,7 +178,7 @@ export function enumerateAllSolutions() {
     logSolutions(allSolutions);
   }
 
-  return [allSolutions, allSolutions[0]];
+  return [allSolutions, allSolutions[0], allSolutions[1]]; // all, best, sub optimal
 }
 
 /**

@@ -201,6 +201,15 @@ export function showEndGameFailedAttentionCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
+            You did not pass the attention check. You may continue the experiment, but you will not be compensated.
+          </p>`;
+  document.getElementById("modalOverlay").style.display = "flex";
+}
+
+export function showFailedAttentionCheckBeforeRedirect() {
+  modalContainer.style.display = "block";
+  const modalInfo = document.getElementById("modalInfo");
+  modalInfo.innerHTML = `<p>
             Unfortunately, you did not pass the attention check trials, now the game is over 
             and you will be redirected back to Prolific.
             </p>`;

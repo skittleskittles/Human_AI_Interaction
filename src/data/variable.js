@@ -52,16 +52,26 @@ export const globalState = {
   },
 
   permutations: [],
+
   allSolutions: null,
   bestSolution: null,
+  subOptimalSolution: null,
   userSolution: null,
+
   interceptionCounter: 0,
   interceptionFrame: 0,
 
-  canShowRequestAI: false,
   canShowAIAnswer: false,
 
   demoPlayTimes: 0,
+};
+
+export const AI_HELP_TYPE = {
+  NO_AI: 0,
+  OPTIMAL_AI_BEFORE: 1,
+  OPTIMAL_AI_AFTER: 2,
+  SUB_AI_AFTER: 3,
+  SUBAI_REQUEST: 4,
 };
 
 /*
