@@ -1,4 +1,4 @@
-import { globalState } from "../data/variable.js";
+import { globalState, AI_HELP_TYPE } from "../data/variable.js";
 import {
   canvas,
   startButton,
@@ -174,20 +174,21 @@ function startTrialAnimation() {
 
 --------------------------------------------------------------------------------------
 */
-export function endDemo() {
+export async function endDemo() {
   cancelAnimationFrame(globalState.animationFrameId);
 
   updateInfoPanel();
   showReplayButton();
-  loadBestSolutions();
-  updateAIRequestState();
+  updateAIState();
 
-  globalState.lastRoundObjects = structuredClone(globalState.objects); // Save object state for retry
+  globalState.lastRoundObjects = structuredClone(globalState.objects); // save object state for retry
   globalState.demoPlayTimes++;
 
-  startThinkTimerIfFirstDemo();
-
-  redrawAll();
+  loadBestSolutions(() => {
+    // wait until caculation ends
+    redrawAll();
+    startThinkTimerIfFirstDemo();
+  });
 }
 
 function updateInfoPanel() {
@@ -201,7 +202,7 @@ function updateInfoPanel() {
     educationInfo += `<p>Scores are awarded based on how close you are to the selected objects and their values.</p>`;
   }
 
-  if (globalState.AI_HELP === 1) {
+  if ([AI_HELP_TYPE.OPTIMAL_AI_BEFORE].includes(globalState.AI_HELP)) {
     educationInfo += `<p>The suggested AI solution is shown in blue</p>`;
   }
 
@@ -217,30 +218,36 @@ function showReplayButton() {
   replayButton.addEventListener("click", replayDemo);
 }
 
-function loadBestSolutions() {
+function loadBestSolutions(callback) {
   import("./computation/solutionEvaluator.js")
     .then((module) => module.enumerateAllSolutions())
-    .then(([allSolutions, bestSolution]) => {
+    .then(([allSolutions, bestSolution, subOptimalSolution]) => {
       globalState.allSolutions = allSolutions;
       globalState.bestSolution = bestSolution;
+      globalState.subOptimalSolution = subOptimalSolution;
+
+      if (callback) callback();
     })
     .catch((error) => console.error("Error loading solutions:", error));
 }
 
-function updateAIRequestState() {
-  if (globalState.AI_HELP === 2) {
+function updateAIState() {
+  // whether to show request ai button
+  if (globalState.AI_HELP === AI_HELP_TYPE.SUBAI_REQUEST) {
     aiRequest.style.display = "block";
     aiRequest.disabled = false;
   }
 
-  if (globalState.AI_HELP === 1) {
+  // whether to show ai answer
+  if ([AI_HELP_TYPE.OPTIMAL_AI_BEFORE].includes(globalState.AI_HELP)) {
     globalState.canShowAIAnswer = true;
   }
 
   const isAttentionCheck =
-    globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
-
+  globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
   globalState.canShowAIAnswer = isAttentionCheck;
+
+  // todo fsy: ai after
 }
 
 function startThinkTimerIfFirstDemo() {
@@ -259,9 +266,6 @@ function startThinkTimerIfFirstDemo() {
 export function replayDemo() {
   globalState.canShowAIAnswer = false;
   replayButton.disabled = true; // Disables the button
-  //replayButton.style.display = 'none'; // Hide the button during replay
-  //initializeObjects(); // Reinitialize objects for replay
-  //initializePlayer();  // Reinitialize player for replay
   globalState.totalFrames = 0; // Reset frame counter
   globalState.animationFrameId = requestAnimationFrame(animateObjects);
 
@@ -483,7 +487,8 @@ function handleMainMode() {
 --------------------------------------------------------------------------------------
 */
 export function revealAISolution() {
-  if (globalState.AI_HELP == 2) {
+  if (globalState.AI_HELP == AI_HELP_TYPE.SUBAI_REQUEST) {
+    // todo fsy: record current user choice
     globalState.canShowAIAnswer = true;
 
     redrawAll();

@@ -3,7 +3,7 @@
  *   - https://docs.google.com/document/d/1bmtTgm39KQYB385JB6DSbq2pWNm6omMeQpxw29AaBP0/edit?tab=t.twrrqelzi8cm
  */
 
-import { globalState } from "../data/variable.js";
+import { AI_HELP_TYPE, globalState } from "../data/variable.js";
 import { getCurrentDate } from "../utils/utils.js";
 
 /**

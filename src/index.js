@@ -11,7 +11,7 @@ import {
   modalContainer,
 } from "./data/domElements";
 import { randSeed } from "./data/constant";
-import { globalState } from "./data/variable";
+import { AI_HELP_TYPE, globalState } from "./data/variable";
 import { User } from "./logic/collectData";
 import {
   getUrlParameters,
@@ -38,6 +38,7 @@ import { checkIfUserExists } from "./firebase/saveData2Firebase.js";
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
   url.searchParams.set("DEBUG", "true");
+  url.searchParams.set("AI_HELP", AI_HELP_TYPE.OPTIMAL_AI_BEFORE);
   window.history.replaceState({}, "", url);
 }
 
@@ -67,12 +68,18 @@ if (urlParams.PROLIFIC_PID !== undefined) {
 // Initial setup
 function initGame(seed) {
   //
-  if (globalState.AI_HELP == 0) {
+  if (globalState.AI_HELP == AI_HELP_TYPE.NO_AI) {
     aiInfo.style.display = "none";
     aiInfoContent.innerHTML = `<p>AI assistance will not be available in this session. </p>`;
-  } else if (globalState.AI_HELP == 1) {
+  } else if (
+    [
+      AI_HELP_TYPE.OPTIMAL_AI_BEFORE,
+      AI_HELP_TYPE.OPTIMAL_AI_AFTER,
+      AI_HELP_TYPE.SUB_AI_AFTER,
+    ].includes(globalState.AI_HELP)
+  ) {
     aiInfoContent.innerHTML = `<p>AI assistance will be available in this session. </p>`;
-  } else if (globalState.AI_HELP == 2) {
+  } else if (globalState.AI_HELP == AI_HELP_TYPE.SUBAI_REQUEST) {
     aiInfoContent.innerHTML = `<p>AI assistance is available on request in this session. </p>`;
   }
 

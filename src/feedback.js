@@ -1,5 +1,5 @@
 import { feedbackContainer } from "./data/domElements";
-import { globalState } from "./data/variable";
+import { globalState, AI_HELP_TYPE } from "./data/variable";
 import { User } from "./logic/collectData";
 import { getCurrentDate } from "./utils/utils";
 import { saveFeedbackData } from "./firebase/saveData2Firebase";
@@ -20,13 +20,13 @@ export function showFeedback() {
       const radioGroups = document.querySelectorAll("input[type='radio']");
       const thankYouMessage = document.getElementById("thankYouMessage");
 
-      if (globalState.AI_HELP !== 0) {
+      if (globalState.AI_HELP !== AI_HELP_TYPE.NO_AI) {
         aiFeedback.style.display = "block";
       }
 
       function checkFormCompletion() {
         const requiredFields =
-          globalState.AI_HELP === 0
+          globalState.AI_HELP === AI_HELP_TYPE.NO_AI
             ? ["1-1", "1-2", "1-3", "1-4"] // Minimum required fields when AI is not used
             : [...new Set([...radioGroups].map((r) => r.name))]; // All fields if AI is used
 
