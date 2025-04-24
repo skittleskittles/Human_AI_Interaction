@@ -92,10 +92,10 @@ export function createNewTrialData(trial_id) {
     ai_choice: [], // []Choice
     best_choice: [], // []Choice
     user_choice: [], // []Choice
-    replay_num: { ai_before: 0, ai_after: 0, total: 0 }, // CustomCount
-    reselect_num: { ai_before: 0, ai_after: 0, total: 0 }, // CustomCount
-    think_time: { ai_before: 0, ai_after: 0, total: 0 }, // CustomCount
-    total_time: { ai_before: 0, ai_after: 0, total: 0 }, // CustomCount
+    replay_num: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
+    reselect_num: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
+    think_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
+    total_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
   };
 }
 
@@ -172,8 +172,8 @@ export function getCurrentTrialData() {
 
 /**
  * @typedef {CustomCount}
- * @property {number} ai_before
- * @property {number} ai_after
+ * @property {number} before_ai_show
+ * @property {number} after_ai_show
  * @property {number} total
  */
 /**
@@ -186,9 +186,9 @@ export function addToCustomCount(countObj, value, isAfterAI) {
   if (!countObj || typeof value !== "number") return;
 
   if (isAfterAI) {
-    countObj.ai_after += value;
+    countObj.after_ai_show += value;
   } else {
-    countObj.ai_before += value;
+    countObj.before_ai_show += value;
   }
   countObj.total += value;
 }
@@ -197,14 +197,14 @@ export function addToCustomCount(countObj, value, isAfterAI) {
  * @typedef {Object} Choice
  * @property {ExperimentObject[]} selected_objects
  * @property {number} score
- * @property {'no_ai' | 'ai_before' | 'ai_after'} ai_assisted_flag
+ * @property {'no_ai' | 'before_ai_show' | 'after_ai_show'} ai_assisted_flag
  * @property {number} rank
  */
 
 /**
  * Creates a Choice object from a given solution.
  * @param {Object} solution - userSolution or bestSolution
- * @param {'no_ai' | 'ai_before' | 'ai_after'} ai_assisted_flag
+ * @param {'no_ai' | 'before_ai_show' | 'after_ai_show'} ai_assisted_flag
  * @returns {Choice}
  */
 export function createChoiceFromSolution(solution, ai_assisted_flag = "no_ai") {
@@ -227,7 +227,7 @@ export function createChoiceFromSolution(solution, ai_assisted_flag = "no_ai") {
 export function recordUserChoiceData(trial, userSolution) {
   let ai_assisted_flag = "no_ai";
   if (globalState.AI_HELP > 0) {
-    ai_assisted_flag = globalState.canShowAIAnswer ? "ai_after" : "ai_before";
+    ai_assisted_flag = globalState.canShowAIAnswer ? "after_ai_show" : "before_ai_show";
   }
 
   const userChoice = createChoiceFromSolution(userSolution, ai_assisted_flag);
