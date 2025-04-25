@@ -3,7 +3,7 @@ import { globalState } from "./data/variable";
 import { User } from "./logic/collectData";
 import { getCurrentDate } from "./utils/utils";
 import { saveFeedbackData } from "./firebase/saveData2Firebase";
-import { showFailedAttentionCheck } from "./instructions";
+import { showEndGameFailedAttentionCheck } from "./instructions";
 
 export function showFeedback() {
   // Fetch and insert feedback form dynamically
@@ -91,7 +91,7 @@ async function submit(freeResponse, submitButton, thankYouMessage) {
       );
     }, 3000);
   } else {
-    showFailedAttentionCheck();
+    showEndGameFailedAttentionCheck();
     setTimeout(() => {
       window.location.replace(
         "https://app.prolific.com/submissions/complete?cc=CVVFIIMS"

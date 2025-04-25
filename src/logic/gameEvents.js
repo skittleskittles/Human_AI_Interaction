@@ -12,9 +12,10 @@ import {
   finishButton,
 } from "../data/domElements.js";
 import {
-  showEndGame,
+  showEndGameFailedQualityCheck,
   showEnterMainGame,
   showEnterRetryTrials,
+  showFailedAttentionCheck,
 } from "../instructions.js";
 import { redrawAll } from "./drawing.js";
 import { animateObjects, animateInterception } from "./animation.js";
@@ -429,13 +430,24 @@ function handleEducationMode() {
       showEnterRetryTrials();
     } else {
       globalState.needRetry = false;
-      showEndGame();
+      showEndGameFailedQualityCheck();
       finishGame();
     }
   }
 }
 
-function handleMainMode() {}
+function handleMainMode() {
+  // Check if current trial is an attention check trial
+  const isAttentionCheck =
+    globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
+
+  if (isAttentionCheck) {
+    const passed = globalState.userSolution === globalState.bestSolution;
+    if (!passed) {
+      showFailedAttentionCheck();
+    }
+  }
+}
 
 /*
 --------------------------------------------------------------------------------------
@@ -471,7 +483,9 @@ export function finishGame() {
     showFeedback();
   } else {
     setTimeout(() => {
-      window.location.replace("https://app.prolific.com/submissions/complete?cc=C1A9WJ8O");
+      window.location.replace(
+        "https://app.prolific.com/submissions/complete?cc=C1A9WJ8O"
+      );
     }, 3000);
 
     return;

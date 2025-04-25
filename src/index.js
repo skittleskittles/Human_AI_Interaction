@@ -130,7 +130,7 @@ async function initExperimentEnvironment() {
     globalState.speedMultiplier = speedMultiplier;
     globalState.OBSERVATION_FRAMES = Math.round(3000 * (refreshRate / 1000));
     globalState.INTERCEPTION_FRAMES = Math.round(2000 * (refreshRate / 1000));
-    await startExperiment(false, false);
+    await startExperiment(true, true);
   } catch (error) {
     console.error("❌ Failed to initialize environment:", error);
     alert(
