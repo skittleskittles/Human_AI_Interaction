@@ -130,7 +130,7 @@ async function initExperimentEnvironment() {
     globalState.speedMultiplier = speedMultiplier;
     globalState.OBSERVATION_FRAMES = Math.round(3000 * (refreshRate / 1000));
     globalState.INTERCEPTION_FRAMES = Math.round(2000 * (refreshRate / 1000));
-    await startExperiment(true, true);
+    await startExperiment(false, false);
   } catch (error) {
     console.error("❌ Failed to initialize environment:", error);
     alert(
@@ -144,7 +144,8 @@ async function startExperiment(skipConsent = false, skipEducation = false) {
     await loadModal();
 
     const userExists = await checkIfUserExists(User.prolific_pid);
-    if (userExists) { // multiple attempts, not allowed
+    if (userExists) {
+      // multiple attempts, not allowed
       showMultipleAttempts();
       setTimeout(() => {
         window.location.replace(
