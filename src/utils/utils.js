@@ -82,7 +82,9 @@ export function getOrdinalSuffix(n) {
 export function measureRefreshRate() {
   let lastTimestamp = null;
   let frameTimestamps = [];
-  const measureDuration = 1000; // Measure over 1 second
+  const measureDuration = 1500; // Measure over 1.5 second
+  const warmupFrames = 5;
+  const expectedFrameTime = 1000 / 60;
 
   return new Promise((resolve) => {
     function measureFrame(timestamp) {
@@ -92,12 +94,16 @@ export function measureRefreshRate() {
       }
       lastTimestamp = timestamp;
 
-      if (frameTimestamps.length < measureDuration / 16.67) {
+      if (
+        frameTimestamps.length <
+        measureDuration / expectedFrameTime + warmupFrames
+      ) {
         requestAnimationFrame(measureFrame);
       } else {
+        const trimmed = frameTimestamps.slice(warmupFrames);
+        const filtered = trimmed.filter((t) => t > 5 && t < 100);
         const avgFrameDuration =
-          frameTimestamps.reduce((sum, time) => sum + time, 0) /
-          frameTimestamps.length;
+          filtered.reduce((sum, t) => sum + t, 0) / filtered.length;
         const refreshRate = Math.round(1000 / avgFrameDuration) || 60;
         const speedMultiplier = refreshRate / 60;
         resolve({ refreshRate, speedMultiplier });
