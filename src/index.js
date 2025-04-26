@@ -144,11 +144,11 @@ async function startExperiment(skipConsent = false, skipEducation = false) {
     await loadModal();
 
     const userExists = await checkIfUserExists(User.prolific_pid);
-    if (userExists) {
+    if (userExists) { // multiple attempts, not allowed
       showMultipleAttempts();
       setTimeout(() => {
         window.location.replace(
-          "https://app.prolific.com/submissions/complete?cc=C15OCGW5"
+          "https://app.prolific.com/submissions/complete?cc=C12OU54H"
         );
       }, 3000);
       return;

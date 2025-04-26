@@ -91,6 +91,7 @@ async function submit(freeResponse, submitButton, thankYouMessage) {
       );
     }, 3000);
   } else {
+    // failed attention check
     showEndGameFailedAttentionCheck();
     setTimeout(() => {
       window.location.replace(

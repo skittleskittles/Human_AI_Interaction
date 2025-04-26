@@ -482,6 +482,7 @@ export function finishGame() {
     // finish all trials
     showFeedback();
   } else {
+    // failed education(quality) trials
     setTimeout(() => {
       window.location.replace(
         "https://app.prolific.com/submissions/complete?cc=C1A9WJ8O"
