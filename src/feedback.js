@@ -78,8 +78,6 @@ async function submit(freeResponse, submitButton, thankYouMessage) {
   submitButton.disabled = true;
   thankYouMessage.style.display = "block";
 
-  console.log("📌 User Feedback:", feedbackData);
-
   // Save feedback data
   await saveFeedbackData(feedbackData);
 

@@ -346,7 +346,6 @@ function recordTrialDataStartIntercept() {
     thinkTimeSec,
     globalState.canShowAIAnswer
   );
-  console.log("think time: ", thinkTimeSec);
 }
 
 /*

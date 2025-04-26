@@ -30,10 +30,6 @@ export function generatePermutations(arr, k) {
 }
 
 export function lookupInterceptionPaths() {
-  for (let i = 0; i < globalState.NUM_SELECTIONS; i++) {
-    console.log(`Object selected ${i} = ${globalState.selectedObjects[i]}`);
-  }
-
   // Find the index of the matching permutation
   const matchingIndex = findMatchingPermutationIndex(
     globalState.permutations,
@@ -41,15 +37,15 @@ export function lookupInterceptionPaths() {
   );
   let userSolution;
 
-  console.log(`Matching index: ${matchingIndex}`);
+  // console.log(`Matching index: ${matchingIndex}`);
   if (matchingIndex !== -1) {
-    console.log(
-      `Matching permutation:`,
-      globalState.permutations[matchingIndex]
-    );
+    // console.log(
+    //   `Matching permutation:`,
+    //   globalState.permutations[matchingIndex]
+    // );
     userSolution = globalState.allSolutions[matchingIndex];
   } else {
-    console.log(`No matching permutation found.`);
+    // console.log(`No matching permutation found.`);
   }
 
   return userSolution;

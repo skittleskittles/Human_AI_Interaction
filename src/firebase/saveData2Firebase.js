@@ -39,7 +39,6 @@ onAuthStateChanged(auth, (user) => {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     firebaseUserId = user.uid;
-    console.log("User is signed in. Firebase user id=" + firebaseUserId);
   } else {
     // User is signed out
     console.log("User is signed out");
@@ -97,9 +96,7 @@ export async function saveOrUpdateUser(endTime) {
     };
     await setDoc(userDocRef, payload, { merge: true });
 
-    console.log(
-      `✅ User uid:${firebaseUserId} - prolific_pid: ${User.prolific_pid} updated.`
-    );
+    console.log(`✅ User prolific_pid: ${User.prolific_pid} updated.`);
     return userDocRef;
   } catch (error) {
     console.error("❌ Failed to save user data:", error);
