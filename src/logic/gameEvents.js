@@ -407,7 +407,7 @@ function displayTrialResults() {
 }
 
 function handleEducationMode() {
-  if (globalState.userSolution == globalState.bestSolution) {
+  if (globalState.userSolution.totalValueProp * 100 === 100) {
     globalState.needRetry = false;
     globalState.retryCnt = 0;
 
@@ -441,7 +441,7 @@ function handleMainMode() {
     globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
 
   if (isAttentionCheck) {
-    const passed = globalState.userSolution === globalState.bestSolution;
+    const passed = globalState.userSolution.totalValueProp * 100 === 100;
     if (!passed) {
       showFailedAttentionCheck();
     }

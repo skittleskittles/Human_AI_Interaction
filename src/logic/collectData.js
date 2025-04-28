@@ -119,7 +119,7 @@ export function updateExperimentData(
     curTrial.trial_id in globalState.ATTENTION_CHECK_TRIALS;
 
   if (isAttentionCheck) {
-    const passed = userSolution === bestSolution;
+    const passed = userSolution.totalValueProp * 100 === 100;
     globalState.ATTENTION_CHECK_TRIALS[curTrial.trial_id] = passed;
     experiment.is_passed_attention_check = Object.values(
       globalState.ATTENTION_CHECK_TRIALS

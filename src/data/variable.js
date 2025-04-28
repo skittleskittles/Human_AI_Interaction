@@ -8,8 +8,8 @@ export const globalState = {
     57: false, // 55 + 1
   },
 
-  // NUM_MAIN_TRIALS: 2,
-  // NUM_EDUCATION_TRIALS: 1,
+  // NUM_MAIN_TRIALS: 3,
+  // NUM_EDUCATION_TRIALS: 2,
   // ATTENTION_CHECK_TRIALS: {
   //   1: false,
   // },
