@@ -169,7 +169,7 @@ export function showEnterEducationTrials() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-      Now, you will play ${globalState.NUM_EDUCATION_TRIALS} quality check trials. Please carefully read the
+      Now, you will play ${globalState.NUM_EDUCATION_TRIALS} comprehension check trials. Please carefully read the
       instructions and make your choices.
       </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
@@ -187,12 +187,13 @@ export function showEnterRetryTrials() {
   document.getElementById("modalOverlay").style.display = "flex";
 }
 
-export function showEndGameFailedQualityCheck() {
+export function showEndGameFailedComprehensionCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-             Unfortunately, you did not pass the quality check trials, now the game is over 
-             and you will be redirected back to Prolific.
+             Unfortunately, you did not pass the comprehension check trials. <br/>
+             Now the game is over. <br/>
+             Please return your submission by closing this study and clicking ‘Stop Without Completing’ on Prolific.
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
@@ -221,8 +222,8 @@ export function showMultipleAttempts() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            You have already participated in this study. Participation is limited to one time only. 
-            Now you will be redirected back to Prolific.
+            You have already participated in this study. Participation is limited to one time only. <br/>
+            Please return your submission by closing this study and clicking ‘Stop Without Completing’ on Prolific. 
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
@@ -232,7 +233,7 @@ export function showEnterMainGame() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            Congratulations! You have completed all the quality check trials. <br/>
+            Congratulations! You have completed all the comprehension check trials. <br/>
             Now, proceed to the main game.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";

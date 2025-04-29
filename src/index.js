@@ -153,11 +153,6 @@ async function startExperiment(skipConsent = false, skipEducation = false) {
     if (userExists) {
       // multiple attempts, not allowed
       showMultipleAttempts();
-      setTimeout(() => {
-        window.location.replace(
-          "https://app.prolific.com/submissions/complete?cc=C12OU54H"
-        );
-      }, 3000);
       return;
     }
 

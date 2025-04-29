@@ -12,7 +12,7 @@ import {
   finishButton,
 } from "../data/domElements.js";
 import {
-  showEndGameFailedQualityCheck,
+  showEndGameFailedComprehensionCheck,
   showEnterMainGame,
   showEnterRetryTrials,
   showFailedAttentionCheck,
@@ -429,7 +429,7 @@ function handleEducationMode() {
       showEnterRetryTrials();
     } else {
       globalState.needRetry = false;
-      showEndGameFailedQualityCheck();
+      showEndGameFailedComprehensionCheck();
       finishGame();
     }
   }
@@ -481,13 +481,7 @@ export function finishGame() {
     // finish all trials
     showFeedback();
   } else {
-    // failed education(quality) trials
-    setTimeout(() => {
-      window.location.replace(
-        "https://app.prolific.com/submissions/complete?cc=C1A9WJ8O"
-      );
-    }, 3000);
-
+    // failed education(comprehension) trials
     return;
   }
 }
