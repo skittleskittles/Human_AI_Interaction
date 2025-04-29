@@ -109,7 +109,7 @@ async function loadModal() {
       infoContent.innerHTML = `
         <p>You did not select the best answers.<br/>
         The best answers are displayed as blue numbers.<br/>
-        Please carefully try again in the next sequence.</p>`;
+        Please carefully try again in the second attempt.</p>`;
     }
   });
 }
