@@ -10,17 +10,21 @@ import { sampleBeta } from "../utils/utils.js";
 import educate1Objects from "../data/educate1_objects.json";
 import educate2Objects from "../data/educate2_objects.json";
 
-export function initializeObjects(isEasyMode, needRetry) {
+export function initializeObjects(isComprehensionCheck, needRetry) {
   globalState.selectedObjects = []; // Reset selections
   globalState.hoverObjectIndex = -1; // Reset hover index
 
-  if (isEasyMode && needRetry && globalState.lastRoundObjects.length > 0) {
+  if (
+    isComprehensionCheck &&
+    needRetry &&
+    globalState.lastRoundObjects.length > 0
+  ) {
     globalState.objects = structuredClone(globalState.lastRoundObjects);
   } else {
     globalState.objects = [];
 
     // Create objects for easy mode
-    if (isEasyMode) {
+    if (isComprehensionCheck) {
       if (globalState.curTrial == 1) {
         globalState.objects = educate1Objects.map((obj) =>
           adjustObjectForRefreshRate(obj)
@@ -46,7 +50,7 @@ export function initializeObjects(isEasyMode, needRetry) {
 
     // Create random objects
     for (let i = 0; i < numObjects; i++) {
-      let newObject = generateRandomObject(isEasyMode);
+      let newObject = generateRandomObject(isComprehensionCheck);
       globalState.objects.push(newObject);
     }
   }

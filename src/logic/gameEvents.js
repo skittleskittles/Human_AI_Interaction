@@ -52,9 +52,7 @@ export function startTrial() {
 
   console.log(`------curTrial: ${globalState.curTrial}---------`);
 
-  if (!globalState.isEasyMode) {
-    initializeTrialData();
-  }
+  initializeTrialData();
 
   prepareUIForTrial();
   initializeGameState();
@@ -63,24 +61,24 @@ export function startTrial() {
 
 function recordPreviousTrialData() {
   const curExperiment = getCurrentExperimentData();
-  const lastTrial = getCurrentTrialData();
+  const lastTrial = getCurrentTrialData(globalState.isComprehensionCheck);
 
-  if (lastTrial && !globalState.isEasyMode) {
+  if (lastTrial) {
     const trialSec = getTimerValue("trial");
     updateTrialData(
       lastTrial,
       globalState.userSolution,
       globalState.bestSolution,
       trialSec,
-      globalState.canShowAIAnswer
+      globalState.canShowAIAnswer || globalState.retryCnt > 0
     );
 
     // Update experiment status based on attention checks and progress
     updateExperimentData(
       curExperiment,
+      globalState.isComprehensionCheck,
       lastTrial,
-      globalState.userSolution,
-      globalState.bestSolution
+      globalState.userSolution
     );
   }
 
@@ -94,6 +92,16 @@ function recordPreviousTrialData() {
 }
 
 function prepareNewTrial() {
+  if (
+    globalState.isComprehensionCheck &&
+    !globalState.needRetry &&
+    globalState.curTrial === globalState.NUM_EDUCATION_TRIALS
+  ) {
+    globalState.isComprehensionCheck = false;
+    globalState.curTrial = 0;
+    globalState.retryCnt = 0;
+  }
+
   if (globalState.needRetry) {
     globalState.retryCnt++;
   } else {
@@ -120,9 +128,24 @@ function initializeTrialData() {
     initializeExperimentData();
   }
 
+  const isAttentionCheck =
+    !globalState.isComprehensionCheck &&
+    globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
+
   // Push new trial to the current experiment
-  const newTrial = createNewTrialData(globalState.curTrial);
-  User.experiments[globalState.curExperiment].trials.push(newTrial);
+  const newTrial = createNewTrialData(
+    globalState.curTrial,
+    globalState.isComprehensionCheck,
+    isAttentionCheck
+  );
+
+  if (globalState.isComprehensionCheck) {
+    User.experiments[globalState.curExperiment].comprehension_trials.push(
+      newTrial
+    );
+  } else {
+    User.experiments[globalState.curExperiment].trials.push(newTrial);
+  }
 }
 
 function prepareUIForTrial() {
@@ -136,7 +159,7 @@ function prepareUIForTrial() {
 }
 
 function initializeGameState() {
-  initializeObjects(globalState.isEasyMode, globalState.needRetry);
+  initializeObjects(globalState.isComprehensionCheck, globalState.needRetry);
   initializePlayer();
   globalState.totalFrames = 0;
 }
@@ -175,7 +198,7 @@ function updateInfoPanel() {
     <p>Maximize scores by intercepting objects.</p>
   `;
 
-  if (globalState.isEasyMode) {
+  if (globalState.isComprehensionCheck) {
     educationInfo += `<p>Scores are awarded based on how close you are to the selected objects and their values.</p>`;
   }
 
@@ -239,10 +262,12 @@ export function replayDemo() {
   globalState.animationFrameId = requestAnimationFrame(animateObjects);
 
   // record replay num
-  if (!globalState.isEasyMode) {
-    const currentTrial = getCurrentTrialData();
-    addToCustomCount(currentTrial.replay_num, 1, globalState.canShowAIAnswer);
-  }
+  const currentTrial = getCurrentTrialData(globalState.isComprehensionCheck);
+  addToCustomCount(
+    currentTrial.replay_num,
+    1,
+    globalState.canShowAIAnswer || globalState.retryCnt > 0
+  );
 }
 
 /*
@@ -258,10 +283,12 @@ export function reselectObjects() {
   restoreReplayUI();
 
   // record reselect num
-  if (!globalState.isEasyMode) {
-    const currentTrial = getCurrentTrialData();
-    addToCustomCount(currentTrial.reselect_num, 1, globalState.canShowAIAnswer);
-  }
+  const currentTrial = getCurrentTrialData(globalState.isComprehensionCheck);
+  addToCustomCount(
+    currentTrial.reselect_num,
+    1,
+    globalState.canShowAIAnswer || globalState.retryCnt > 0
+  );
 }
 
 function resetSelections() {
@@ -304,9 +331,7 @@ export function startInterception() {
   updateInterceptionInfo();
   startInterceptionAnimation();
 
-  if (!globalState.isEasyMode) {
-    recordTrialDataStartIntercept();
-  }
+  recordTrialDataStartIntercept();
 
   stopTimer("think");
 }
@@ -337,14 +362,14 @@ function startInterceptionAnimation() {
 }
 
 function recordTrialDataStartIntercept() {
-  const currentTrial = getCurrentTrialData();
+  const currentTrial = getCurrentTrialData(globalState.isComprehensionCheck);
   recordUserChoiceData(currentTrial, globalState.userSolution);
 
   const thinkTimeSec = getTimerValue("think");
   addToCustomCount(
     currentTrial.think_time,
     thinkTimeSec,
-    globalState.canShowAIAnswer
+    globalState.canShowAIAnswer || globalState.retryCnt > 0
   );
 }
 
@@ -365,8 +390,8 @@ export function finishInterception() {
   // Display final trial info
   displayTrialResults();
 
-  if (globalState.isEasyMode) {
-    handleEducationMode();
+  if (globalState.isComprehensionCheck) {
+    handleComprehensionMode();
   } else {
     handleMainMode();
   }
@@ -406,15 +431,12 @@ function displayTrialResults() {
   resultInfoContent.innerHTML = scoreText;
 }
 
-function handleEducationMode() {
+function handleComprehensionMode() {
   if (globalState.userSolution.totalValueProp * 100 === 100) {
     globalState.needRetry = false;
     globalState.retryCnt = 0;
 
     if (globalState.curTrial === globalState.NUM_EDUCATION_TRIALS) {
-      globalState.isEasyMode = false;
-      globalState.curTrial = 0;
-      globalState.retryCnt = 0;
       showEnterMainGame();
       initializeExperimentData();
 
@@ -426,6 +448,7 @@ function handleEducationMode() {
   } else {
     if (globalState.retryCnt < 1) {
       globalState.needRetry = true;
+      recordPreviousTrialData();
       showEnterRetryTrials();
     } else {
       globalState.needRetry = false;

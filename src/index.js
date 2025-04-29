@@ -103,7 +103,10 @@ async function loadModal() {
     document.getElementById("modalOverlay").style.display = "none";
     if (globalState.needRetry) {
       globalState.canShowAIAnswer = true;
-      initializeObjects(globalState.isEasyMode, globalState.needRetry);
+      initializeObjects(
+        globalState.isComprehensionCheck,
+        globalState.needRetry
+      );
       initializePlayer();
       redrawAll();
       infoContent.innerHTML = `
@@ -136,8 +139,7 @@ async function initExperimentEnvironment() {
       ", speedMultiplier:",
       speedMultiplier
     );
-   await startExperiment(false, false);
-   //await startExperiment(true, false);
+    await startExperiment(false, false);
   } catch (error) {
     console.error("❌ Failed to initialize environment:", error);
     alert(
@@ -169,7 +171,7 @@ async function startExperiment(skipConsent = false, skipEducation = false) {
     }
 
     if (!skipEducation) {
-      globalState.isEasyMode = true;
+      globalState.isComprehensionCheck = true;
       showEnterEducationTrials();
     }
     experimentContainer.style.display = "block";

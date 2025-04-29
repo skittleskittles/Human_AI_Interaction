@@ -70,7 +70,7 @@ function setupInstructionNavigation() {
     } else {
       instructionsContainer.style.display = "none";
       experimentContainer.style.display = "block";
-      globalState.isEasyMode = true;
+      globalState.isComprehensionCheck = true;
       showEnterEducationTrials();
       startGame();
       // update user data before enter eduation trials

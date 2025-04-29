@@ -153,12 +153,19 @@ async function saveOrUpdateExperiment(userDocRef, experiment, endTime) {
  */
 async function saveTrialData(expRef, trial) {
   try {
-    const trialRef = doc(collection(expRef, "trials"), `${trial.trial_id}`);
-    const isAttentionCheck =
-      trial.trial_id in globalState.ATTENTION_CHECK_TRIALS;
+    let trialRef;
+    if (trial.is_comprehension_check) {
+      trialRef = doc(
+        collection(expRef, "comprehension_trials"),
+        `${trial.trial_id}`
+      );
+    } else {
+      trialRef = doc(collection(expRef, "trials"), `${trial.trial_id}`);
+    }
     await setDoc(trialRef, {
       trial_id: trial.trial_id,
-      is_attention_check: isAttentionCheck,
+      is_attention_check: trial.is_attention_check,
+      is_comprehension_check: trial.is_comprehension_check,
       create_time: trial.create_time,
       end_time: trial.end_time,
       performance: trial.performance,

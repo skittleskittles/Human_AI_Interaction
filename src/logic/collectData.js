@@ -36,6 +36,7 @@ export const User = {
  * @property {boolean} is_finished
  * @property {number} num_trials
  * @property {Trial[]} trials
+ * @property {Trial[]} comprehension_trials
  */
 export function createNewExperimentData(experiment_id, num_trials) {
   return {
@@ -46,6 +47,7 @@ export function createNewExperimentData(experiment_id, num_trials) {
     is_finished: false,
     num_trials,
     trials: [], // will be populated with Trial objects
+    comprehension_trials: [],
   };
 }
 
@@ -75,13 +77,15 @@ export function getCurrentExperimentData() {
  * @property {CustomCount} reselect_num
  * @property {CustomCount} think_time // seconds, 第一次动画结束到开始拦截
  * @property {CustomCount} total_time // seconds, 每一轮trial总时间
+ * @property {boolean} is_attention_check
+ * @property {boolean} is_comprehension_check
  */
 /**
  * Creates a new Trial object with default values
  * @param {number} trial_id
  * @returns {Trial}
  */
-export function createNewTrialData(trial_id) {
+export function createNewTrialData(trial_id, is_comprehension_check, is_attention_check) {
   return {
     trial_id,
     create_time: getCurrentDate(),
@@ -96,6 +100,8 @@ export function createNewTrialData(trial_id) {
     reselect_num: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
     think_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
     total_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
+    is_comprehension_check: is_comprehension_check,
+    is_attention_check: is_attention_check,
   };
 }
 
@@ -110,10 +116,13 @@ export function createNewTrialData(trial_id) {
  */
 export function updateExperimentData(
   experiment,
+  isComprehensionCheck,
   curTrial,
-  userSolution,
-  bestSolution
+  userSolution
 ) {
+  if (isComprehensionCheck) {
+    return;
+  }
   // Check if current trial is an attention check trial
   const isAttentionCheck =
     curTrial.trial_id in globalState.ATTENTION_CHECK_TRIALS;
@@ -147,7 +156,7 @@ export function updateTrialData(
   userSolution,
   bestSolution,
   trialSec,
-  canShowAIAnswer
+  isAfterAI
 ) {
   trial.end_time = getCurrentDate();
   trial.user_score = userSolution.totalValue;
@@ -155,19 +164,30 @@ export function updateTrialData(
   trial.performance = userSolution.totalValueProp * 100;
 
   recordBestChoiceData(trial, bestSolution);
-  addToCustomCount(trial.total_time, trialSec, canShowAIAnswer);
+  addToCustomCount(trial.total_time, trialSec, isAfterAI); // todo fsy: total time 的trialSec会一直累加
 }
 
 /**
  * Returns the current Trial object from User based on globalState.
  * @returns {Trial}
  */
-export function getCurrentTrialData() {
+export function getCurrentTrialData(isComprehensionCheck) {
   const currentExperiment = getCurrentExperimentData();
-  if (!currentExperiment || currentExperiment.trials.length === 0) {
+  if (!currentExperiment) {
     return null;
   }
-  return currentExperiment?.trials[globalState.curTrial - 1];
+  if (isComprehensionCheck) {
+    // comprehension trials
+    if (currentExperiment.comprehension_trials.length > 0) {
+      return currentExperiment?.comprehension_trials[globalState.curTrial - 1];
+    }
+  } else {
+    // regular trials
+    if (currentExperiment.trials.length > 0) {
+      return currentExperiment?.trials[globalState.curTrial - 1];
+    }
+  }
+  return null;
 }
 
 /**
@@ -227,7 +247,9 @@ export function createChoiceFromSolution(solution, ai_assisted_flag = "no_ai") {
 export function recordUserChoiceData(trial, userSolution) {
   let ai_assisted_flag = "no_ai";
   if (globalState.AI_HELP > 0) {
-    ai_assisted_flag = globalState.canShowAIAnswer ? "after_ai_show" : "before_ai_show";
+    ai_assisted_flag = globalState.canShowAIAnswer
+      ? "after_ai_show"
+      : "before_ai_show";
   }
 
   const userChoice = createChoiceFromSolution(userSolution, ai_assisted_flag);
