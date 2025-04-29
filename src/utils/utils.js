@@ -55,7 +55,7 @@ export function generateUID(length = 16) {
     uid += chars[array[i] % chars.length];
   }
 
-  return uid;
+  return "test_" + uid;
 }
 
 export function getCurrentDate() {
