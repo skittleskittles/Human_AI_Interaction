@@ -113,3 +113,55 @@ export function measureRefreshRate() {
     requestAnimationFrame(measureFrame);
   });
 }
+
+export function getAttentionCheckTrialCount() {
+  return Object.keys(globalState.ATTENTION_CHECK_TRIALS).length;
+}
+
+export function isAttentionCheck() {
+  const isAttentionCheck =
+    !globalState.isComprehensionCheck &&
+    globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
+  return isAttentionCheck;
+}
+
+export function isPassedAllAttentionCheck() {
+  const isPassedAllAttentionCheck = Object.values(
+    globalState.ATTENTION_CHECK_TRIALS
+  ).every(Boolean);
+  return isPassedAllAttentionCheck;
+}
+
+/***
+ * The number of attention check trials the user has completed and failed
+ * up to the current point in the experiment.
+ * Only includes trials that have already been attempted,
+ * ignores any attention checks that have not yet occurred.
+ */
+export function countFailedAttentionCheck() {
+  const failedCount = Object.entries(globalState.ATTENTION_CHECK_TRIALS).filter(
+    ([trialIdStr, passed]) => {
+      const trialId = Number(trialIdStr);
+      return trialId <= globalState.curTrial && passed === false;
+    }
+  ).length;
+
+  return failedCount;
+}
+
+export function redirectProlificCompleted() {
+  setTimeout(() => {
+    window.location.replace(
+      "https://app.prolific.com/submissions/complete?cc=C1221VHF"
+    );
+  }, 3000);
+}
+
+
+export function redirectProlificFailedAllAttentionCheck() {
+  setTimeout(() => {
+    window.location.replace(
+      "https://app.prolific.com/submissions/complete?cc=CVVFIIMS"
+    );
+  }, 3000);
+}

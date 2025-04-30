@@ -37,7 +37,11 @@ import {
   addToCustomCount,
   recordUserChoiceData,
 } from "./collectData.js";
-import { getCurrentDate, getOrdinalSuffix } from "../utils/utils.js";
+import {
+  getCurrentDate,
+  getOrdinalSuffix,
+  isAttentionCheck,
+} from "../utils/utils.js";
 
 /*
 --------------------------------------------------------------------------------------
@@ -127,15 +131,11 @@ function initializeTrialData() {
     initializeExperimentData();
   }
 
-  const isAttentionCheck =
-    !globalState.isComprehensionCheck &&
-    globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
-
   // Push new trial to the current experiment
   const newTrial = createNewTrialData(
     globalState.curTrial,
     globalState.isComprehensionCheck,
-    isAttentionCheck
+    isAttentionCheck()
   );
 
   if (globalState.isComprehensionCheck) {
@@ -192,21 +192,31 @@ export async function endDemo() {
 }
 
 function updateInfoPanel() {
-  let educationInfo = `
+  let info = `
     <p><center>OR</center></p>
     <p>Click on ${globalState.NUM_SELECTIONS} objects to set the interception order.</p>
     <p>Maximize scores by intercepting objects.</p>
   `;
 
+  let attentionCheckInfo = `
+    <p>This is an attention check.</p>
+    <p>To pass the attention check, click the ${globalState.NUM_SELECTIONS} objects
+     with the highest color intensity at the center — order doesn’t matter.</p>
+   `;
+
   if (globalState.isComprehensionCheck) {
-    educationInfo += `<p>Scores are awarded based on how close you are to the selected objects and their values.</p>`;
+    info += `<p>Scores are awarded based on how close you are to the selected objects and their values.</p>`;
   }
 
   if ([AI_HELP_TYPE.OPTIMAL_AI_BEFORE].includes(globalState.AI_HELP)) {
-    educationInfo += `<p>The suggested AI solution is shown in blue</p>`;
+    info += `<p>The suggested AI solution is shown in blue</p>`;
   }
 
-  infoContent.innerHTML = educationInfo;
+  if (isAttentionCheck()) {
+    info = attentionCheckInfo;
+  }
+
+  infoContent.innerHTML = info;
 
   canvas.addEventListener("click", handleObjectSelection);
   canvas.addEventListener("mousemove", handleMouseHover);
@@ -242,10 +252,6 @@ function updateAIState() {
   if ([AI_HELP_TYPE.OPTIMAL_AI_BEFORE].includes(globalState.AI_HELP)) {
     globalState.canShowAIAnswer = true;
   }
-
-  const isAttentionCheck =
-  globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
-  globalState.canShowAIAnswer = isAttentionCheck;
 
   // todo fsy: ai after
 }
@@ -468,10 +474,7 @@ function handleComprehensionMode() {
 
 function handleMainMode() {
   // Check if current trial is an attention check trial
-  const isAttentionCheck =
-    globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
-
-  if (isAttentionCheck) {
+  if (isAttentionCheck()) {
     const passed = globalState.userSolution.totalValueProp * 100 === 100;
     if (!passed) {
       showFailedAttentionCheck();

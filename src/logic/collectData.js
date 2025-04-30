@@ -3,8 +3,14 @@
  *   - https://docs.google.com/document/d/1bmtTgm39KQYB385JB6DSbq2pWNm6omMeQpxw29AaBP0/edit?tab=t.twrrqelzi8cm
  */
 
-import { AI_HELP_TYPE, globalState } from "../data/variable.js";
-import { getCurrentDate } from "../utils/utils.js";
+import { globalState } from "../data/variable.js";
+import {
+  getCurrentDate,
+  isAttentionCheck,
+  countFailedAttentionCheck,
+  getAttentionCheckTrialCount,
+  isPassedAllAttentionCheck,
+} from "../utils/utils.js";
 
 /**
  * @typedef {Object} User
@@ -32,7 +38,7 @@ export const User = {
  * @property {number} experiment_id
  * @property {Date} create_time
  * @property {Date} end_time
- * @property {boolean} is_passed_attention_check
+ * @property {number} failed_attention_check_count
  * @property {boolean} is_finished
  * @property {number} num_trials
  * @property {Trial[]} trials
@@ -43,7 +49,7 @@ export function createNewExperimentData(experiment_id, num_trials) {
     experiment_id,
     create_time: getCurrentDate(),
     end_time: getCurrentDate(), // will be updated at the end
-    is_passed_attention_check: false,
+    failed_attention_check_count: 0,
     is_finished: false,
     num_trials,
     trials: [], // will be populated with Trial objects
@@ -85,7 +91,11 @@ export function getCurrentExperimentData() {
  * @param {number} trial_id
  * @returns {Trial}
  */
-export function createNewTrialData(trial_id, is_comprehension_check, is_attention_check) {
+export function createNewTrialData(
+  trial_id,
+  is_comprehension_check,
+  is_attention_check
+) {
   return {
     trial_id,
     create_time: getCurrentDate(),
@@ -124,15 +134,10 @@ export function updateExperimentData(
     return;
   }
   // Check if current trial is an attention check trial
-  const isAttentionCheck =
-    curTrial.trial_id in globalState.ATTENTION_CHECK_TRIALS;
-
-  if (isAttentionCheck) {
+  if (isAttentionCheck()) {
     const passed = userSolution.totalValueProp * 100 === 100;
     globalState.ATTENTION_CHECK_TRIALS[curTrial.trial_id] = passed;
-    experiment.is_passed_attention_check = Object.values(
-      globalState.ATTENTION_CHECK_TRIALS
-    ).every(Boolean);
+    experiment.failed_attention_check_count = countFailedAttentionCheck();
   }
 
   // Check if this is the last trial of the main experiment
@@ -142,7 +147,8 @@ export function updateExperimentData(
 
     // Mark the user's overall experiment pass status
     User.is_passed_all_experiments =
-      experiment.is_finished && experiment.is_passed_attention_check;
+      experiment.is_finished &&
+      experiment.failed_attention_check_count < getAttentionCheckTrialCount();
   }
 }
 

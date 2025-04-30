@@ -38,7 +38,7 @@ import { checkIfUserExists } from "./firebase/saveData2Firebase.js";
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
   url.searchParams.set("DEBUG", "true");
-  url.searchParams.set("AI_HELP", AI_HELP_TYPE.OPTIMAL_AI_BEFORE);
+  //url.searchParams.set("AI_HELP", AI_HELP_TYPE.OPTIMAL_AI_BEFORE);
   window.history.replaceState({}, "", url);
 }
 
@@ -149,9 +149,6 @@ async function initExperimentEnvironment() {
     await startExperiment(false, false);
   } catch (error) {
     console.error("❌ Failed to initialize environment:", error);
-    alert(
-      "Unable to detect your screen refresh rate. Please reload and try again."
-    );
   }
 }
 

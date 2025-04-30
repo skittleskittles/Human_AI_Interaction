@@ -5,7 +5,7 @@ import {
 } from "./data/domElements";
 import { globalState } from "./data/variable";
 import { startGame } from ".";
-import { getCurrentDate } from "./utils/utils.js";
+import { getCurrentDate, countFailedAttentionCheck } from "./utils/utils.js";
 
 /*
 --------------------------------------------------------------------------------------
@@ -198,16 +198,7 @@ export function showEndGameFailedComprehensionCheck() {
   document.getElementById("modalOverlay").style.display = "flex";
 }
 
-export function showEndGameFailedAttentionCheck() {
-  modalContainer.style.display = "block";
-  const modalInfo = document.getElementById("modalInfo");
-  modalInfo.innerHTML = `<p>
-            You did not pass the attention check. You may continue the experiment, but you will not be compensated.
-          </p>`;
-  document.getElementById("modalOverlay").style.display = "flex";
-}
-
-export function showFailedAttentionCheckBeforeRedirect() {
+export function showEndGameFailedAllAttentionCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
@@ -220,10 +211,22 @@ export function showFailedAttentionCheckBeforeRedirect() {
 export function showFailedAttentionCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
-  modalInfo.innerHTML = `<p>
-            You did not pass the attention check. 
-            You may continue the experiment, but you will not be compensated.
+
+  const failedCount = countFailedAttentionCheck();
+
+  if (failedCount === 1) {
+    modalInfo.innerHTML = `<p>
+            You just failed an attention check.<br/>
+            If you fail another attention check, you won’t get compensated. 
             </p>`;
+  } else if (failedCount === 2) {
+    modalInfo.innerHTML = `<p>
+            You’ve failed another attention check.<br/>
+            Since this is your second failure, you may continue the experiment, 
+            but <strong>you will not be compensated</strong>.
+            </p>`;
+  }
+
   document.getElementById("modalOverlay").style.display = "flex";
 }
 

@@ -1,9 +1,13 @@
 import { feedbackContainer } from "./data/domElements";
 import { globalState, AI_HELP_TYPE } from "./data/variable";
 import { User } from "./logic/collectData";
-import { getCurrentDate } from "./utils/utils";
+import {
+  getCurrentDate,
+  redirectProlificCompleted,
+  redirectProlificFailedAllAttentionCheck,
+} from "./utils/utils";
 import { saveFeedbackData } from "./firebase/saveData2Firebase";
-import { showEndGameFailedAttentionCheck } from "./instructions";
+import { showEndGameFailedAllAttentionCheck } from "./instructions";
 
 export function showFeedback() {
   // Fetch and insert feedback form dynamically
@@ -83,18 +87,11 @@ async function submit(freeResponse, submitButton, thankYouMessage) {
 
   // redirect to prolific
   if (User.is_passed_all_experiments) {
-    setTimeout(() => {
-      window.location.replace(
-        "https://app.prolific.com/submissions/complete?cc=C1221VHF"
-      );
-    }, 3000);
+    // completed (success)
+    redirectProlificCompleted();
   } else {
     // failed attention check
-    showEndGameFailedAttentionCheck();
-    setTimeout(() => {
-      window.location.replace(
-        "https://app.prolific.com/submissions/complete?cc=CVVFIIMS"
-      );
-    }, 3000);
+    showEndGameFailedAllAttentionCheck();
+    redirectProlificFailedAllAttentionCheck();
   }
 }

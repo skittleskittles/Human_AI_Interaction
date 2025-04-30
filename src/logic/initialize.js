@@ -6,7 +6,7 @@ import {
   betaParam,
 } from "../data/constant.js";
 import { globalState } from "../data/variable.js";
-import { sampleBeta } from "../utils/utils.js";
+import { sampleBeta, isAttentionCheck } from "../utils/utils.js";
 import educate1Objects from "../data/educate1_objects.json";
 import educate2Objects from "../data/educate2_objects.json";
 
@@ -38,9 +38,7 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
     }
 
     const numObjects = globalState.NUM_OBJECTS;
-    const isAttentionCheck =
-      globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
-    if (isAttentionCheck) {
+    if (isAttentionCheck()) {
       globalState.objects = educate1Objects.map((obj) =>
         adjustObjectForRefreshRate(obj)
       );

@@ -1,6 +1,7 @@
 import { ARROW_FACTOR, GAME_RADIUS, playerImage } from "../data/constant.js";
 import { AI_HELP_TYPE, globalState } from "../data/variable.js";
 import { canvas, ctx } from "../data/domElements.js";
+import { isAttentionCheck } from "../utils/utils.js";
 
 // Function to draw arrows indicating direction and speed
 function drawArrows() {
@@ -145,9 +146,7 @@ export function drawObjects() {
         let selectedSolution = aiHelpTypeToSolution[globalState.AI_HELP];
 
         // comprehension check and attention check: show best answers
-        const isAttentionCheck =
-          globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
-        if (globalState.isComprehensionCheck || isAttentionCheck) {
+        if (globalState.isComprehensionCheck) {
           selectedSolution = globalState.bestSolution;
         }
 
