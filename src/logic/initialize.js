@@ -38,13 +38,13 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
     }
 
     const numObjects = globalState.NUM_OBJECTS;
-
     const isAttentionCheck =
       globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
     if (isAttentionCheck) {
       globalState.objects = educate1Objects.map((obj) =>
         adjustObjectForRefreshRate(obj)
       );
+
       return;
     }
 

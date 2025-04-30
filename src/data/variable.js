@@ -59,7 +59,6 @@ export const globalState = {
   interceptionCounter: 0,
   interceptionFrame: 0,
 
-  canShowRequestAI: false,
   canShowAIAnswer: false,
 
   demoPlayTimes: 0,

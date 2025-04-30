@@ -132,7 +132,7 @@ export function drawObjects() {
         );
       }
 
-      if (globalState.canShowRequestAI || globalState.canShowAIAnswer) {
+      if (globalState.canShowAIAnswer) {
         let AISelectionIndex = globalState.bestSolution.sequence.indexOf(index);
         if (AISelectionIndex !== -1) {
           ctx.fillStyle = "blue";

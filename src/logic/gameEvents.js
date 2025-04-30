@@ -108,7 +108,6 @@ function prepareNewTrial() {
     globalState.curTrial++;
   }
   globalState.canShowAIAnswer = false;
-  globalState.canShowRequestAI = false;
   globalState.demoPlayTimes = 0;
 
   startTimer("trial");
@@ -235,8 +234,13 @@ function updateAIRequestState() {
   }
 
   if (globalState.AI_HELP === 1) {
-    globalState.canShowRequestAI = true;
+    globalState.canShowAIAnswer = true;
   }
+
+  const isAttentionCheck =
+    globalState.curTrial in globalState.ATTENTION_CHECK_TRIALS;
+
+  globalState.canShowAIAnswer = isAttentionCheck;
 }
 
 function startThinkTimerIfFirstDemo() {
@@ -253,7 +257,7 @@ function startThinkTimerIfFirstDemo() {
 --------------------------------------------------------------------------------------
 */
 export function replayDemo() {
-  globalState.canShowRequestAI = false;
+  globalState.canShowAIAnswer = false;
   replayButton.disabled = true; // Disables the button
   //replayButton.style.display = 'none'; // Hide the button during replay
   //initializeObjects(); // Reinitialize objects for replay
@@ -354,7 +358,7 @@ function resetInterceptionState() {
 
 function updateInterceptionInfo() {
   infoContent.innerHTML = "<p>Interception sequence in progress...</p>";
-  globalState.canShowRequestAI = false;
+  globalState.canShowAIAnswer = false;
 }
 
 function startInterceptionAnimation() {
@@ -480,7 +484,7 @@ function handleMainMode() {
 */
 export function revealAISolution() {
   if (globalState.AI_HELP == 2) {
-    globalState.canShowRequestAI = true;
+    globalState.canShowAIAnswer = true;
 
     redrawAll();
   }
