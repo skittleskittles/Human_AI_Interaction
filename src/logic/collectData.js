@@ -244,7 +244,7 @@ export function createChoiceFromSolution(solution, ai_assisted_flag = "no_ai") {
 
   return {
     selected_objects,
-    score: solution.totalValueProp ? solution.totalValueProp * 100 : 0,
+    performance: solution.totalValueProp ? solution.totalValueProp * 100 : 0,
     ai_assisted_flag,
     rank: solution.rank ?? -1,
   };
@@ -264,7 +264,7 @@ export function recordUserChoiceData(trial, userSolution) {
 
 export function recordBestChoiceData(trial, bestSolution) {
   const bestChoice = createChoiceFromSolution(bestSolution);
-  trial.best_choice.push(bestChoice);
+  trial.best_choice[0] = bestChoice;
 }
 
 /**

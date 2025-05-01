@@ -131,19 +131,25 @@ function initializeTrialData() {
     initializeExperimentData();
   }
 
-  // Push new trial to the current experiment
-  const newTrial = createNewTrialData(
-    globalState.curTrial,
-    globalState.isComprehensionCheck,
-    isAttentionCheck()
-  );
+  const trialId = globalState.curTrial;
+  const isComprehension = globalState.isComprehensionCheck;
+  const isAttention = isAttentionCheck();
+  const curExp = User.experiments[globalState.curExperiment];
 
-  if (globalState.isComprehensionCheck) {
-    User.experiments[globalState.curExperiment].comprehension_trials.push(
-      newTrial
-    );
+  // Check if trial already exists (for comprehension trials only)
+  if (
+    isComprehension &&
+    curExp.comprehension_trials.some((t) => t.trial_id === trialId)
+  ) {
+    return; // Trial already exists, do not re-add
+  }
+
+  const newTrial = createNewTrialData(trialId, isComprehension, isAttention);
+
+  if (isComprehension) {
+    curExp.comprehension_trials.push(newTrial);
   } else {
-    User.experiments[globalState.curExperiment].trials.push(newTrial);
+    curExp.trials.push(newTrial);
   }
 }
 
