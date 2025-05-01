@@ -201,7 +201,7 @@ function updateInfoPanel() {
   let attentionCheckInfo = `
     <p>This is an attention check.</p>
     <p>To pass the attention check, click the ${globalState.NUM_SELECTIONS} objects
-     with the highest color intensity at the center — order doesn’t matter.</p>
+     with the highest color intensity on the screen — order doesn’t matter.</p>
    `;
 
   if (globalState.isComprehensionCheck) {
