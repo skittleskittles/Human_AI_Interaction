@@ -1,19 +1,19 @@
-/* styles for instruction page5 */
+/* styles for instruction page6 */
 
-.page5-container {
+.page6-container {
   display: block;
   position: relative;
   text-align: center;
 }
 
-.page5-image {
+.page6-image {
   max-width: 85%;
   margin-top: 80px;
   height: auto;
   display: inline-block;
 }
 
-.page5-arrow-container-1 {
+.page6-arrow-container-1 {
   position: absolute;
   top: 0px;
   left: 28%;
@@ -21,7 +21,7 @@
   text-align: center;
 }
 
-.page5-long-arrow-1 {
+.page6-long-arrow-1 {
   width: 3px;
   height: 358px;
   background-color: blue;
@@ -33,7 +33,7 @@
   transform-origin: top;
 }
 
-.page5-arrow-container-2 {
+.page6-arrow-container-2 {
   position: absolute;
   top: 0px;
   right: 0px;
@@ -41,7 +41,7 @@
   text-align: center;
 }
 
-.page5-long-arrow-2 {
+.page6-long-arrow-2 {
   width: 3px;
   height: 285px;
   background-color: blue;
@@ -53,8 +53,8 @@
   transform-origin: top;
 }
 
-.page5-long-arrow-1::after,
-.page5-long-arrow-2::after {
+.page6-long-arrow-1::after,
+.page6-long-arrow-2::after {
   content: "";
   position: absolute;
   top: 100%;
