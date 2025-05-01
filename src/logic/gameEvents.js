@@ -404,9 +404,6 @@ export function finishInterception() {
   console.log(`Finished interception sequence`);
   cancelAnimationFrame(globalState.animationFrameId);
 
-  // Show correct button
-  updateButtonVisibility();
-
   // Display final trial info
   displayTrialResults();
 
@@ -417,11 +414,13 @@ export function finishInterception() {
   }
 }
 
-function updateButtonVisibility() {
-  if (globalState.curTrial === globalState.NUM_MAIN_TRIALS) {
+function updateButtonVisibility(isFinished) {
+  if (isFinished) {
     finishButton.style.display = "block";
+    startButton.style.display = "none";
   } else {
     startButton.style.display = "block";
+    finishButton.style.display = "none";
   }
 }
 
@@ -452,6 +451,7 @@ function displayTrialResults() {
 }
 
 function handleComprehensionMode() {
+  updateButtonVisibility(false);
   if (globalState.userSolution.totalValueProp * 100 === 100) {
     globalState.needRetry = false;
     globalState.retryCnt = 0;
@@ -472,6 +472,8 @@ function handleComprehensionMode() {
       showEnterRetryTrials();
     } else {
       globalState.needRetry = false;
+      // Show correct button
+      updateButtonVisibility(true);
       showEndGameFailedComprehensionCheck();
       finishGame();
     }
@@ -479,6 +481,9 @@ function handleComprehensionMode() {
 }
 
 function handleMainMode() {
+  // Show correct button
+  updateButtonVisibility(globalState.curTrial === globalState.NUM_MAIN_TRIALS);
+
   // Check if current trial is an attention check trial
   if (isAttentionCheck()) {
     const passed = globalState.userSolution.totalValueProp * 100 === 100;
@@ -509,9 +514,6 @@ export function finishGame() {
 
   cancelAnimationFrame(globalState.animationFrameId);
 
-  // Hide the main game container
-  experimentContainer.style.display = "none";
-
   // Record data
   recordPreviousTrialData();
 
@@ -520,9 +522,12 @@ export function finishGame() {
 
   if (globalState.curTrial == globalState.NUM_MAIN_TRIALS) {
     // finish all trials
+    // Hide the main game container
+    experimentContainer.style.display = "none";
     showFeedback();
   } else {
     // failed education(comprehension) trials
+    showEndGameFailedComprehensionCheck();
     return;
   }
 }
