@@ -146,7 +146,7 @@ async function initExperimentEnvironment() {
       ", speedMultiplier:",
       speedMultiplier
     );
-    await startExperiment(true, false);
+    await startExperiment(false, false);
   } catch (error) {
     console.error("❌ Failed to initialize environment:", error);
   }
