@@ -211,7 +211,9 @@ function updateInfoPanel() {
    `;
 
   if (globalState.isComprehensionCheck) {
-    info += `<p>Scores are awarded based on how close you are to the selected objects and their values.</p>`;
+    info += `<p>Scores are awarded based on how close you are to the selected objects and their values.</p>
+            <p>You have two attempts to pass this comprehension check trial.<p>`
+
   }
 
   if ([AI_HELP_TYPE.OPTIMAL_AI_BEFORE].includes(globalState.AI_HELP)) {

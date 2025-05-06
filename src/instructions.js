@@ -180,7 +180,7 @@ export function showEnterRetryTrials() {
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
             You did not select the best answers. <br/>
-            The best answers will be shown in blue.
+            <strong>The best answers will be shown in blue. </strong>
             Please try again.<br/>
             Note: Your can earn partial score for missed interceptions.
           </p>`;
@@ -191,9 +191,9 @@ export function showEndGameFailedComprehensionCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-             Unfortunately, you did not pass the comprehension check trials. <br/>
-             Now the game is over. <br/>
-             Please return your submission by closing this study and clicking ‘Stop Without Completing’ on Prolific.
+             You did not pass this comprehension check trial after two attempts, 
+             so the study has ended, and <strong> no compensation will be provided. </strong> <br/>
+             Please <strong> return </strong>  your submission by closing this study and clicking ‘Stop Without Completing’ on Prolific. 
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
@@ -235,7 +235,7 @@ export function showMultipleAttempts() {
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
             You have already participated in this study. Participation is limited to one time only. <br/>
-            Please return your submission by closing this study and clicking ‘Stop Without Completing’ on Prolific. 
+            Please <strong> return </strong> your submission by closing this study and clicking ‘Stop Without Completing’ on Prolific. 
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
