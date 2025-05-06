@@ -27,7 +27,7 @@ export function showInstructions() {
 }
 
 let currentPage = 1;
-const totalPages = 8;
+const totalPages = 9;
 const unlockedPages = new Set();
 let timer = null;
 let countdownInterval = null;
